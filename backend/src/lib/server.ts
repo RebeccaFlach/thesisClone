@@ -1,4 +1,3 @@
-'use strict'
 
 import cors from 'cors';
 import express from 'express';
@@ -31,6 +30,7 @@ app.use(bodyParser.json(),cors())
 const testRouter = new TestRouter();
 app.use('/api/test', testRouter.router);
 
+
 const gradeRouter = new GradeRouter();
 app.use('/api/grade', gradeRouter.router);
 
@@ -40,14 +40,16 @@ app.use('/api/grade', gradeRouter.router);
 //StudentVue.getDistrictUrls('85749').then(console.log);
 
 
-export const start = () => {
+const start = () => {
   app.listen(PORT, () =>{
     console.log(`Listening on port: ${PORT}`)
   })
 }
 
-export const stop = () => {
-  app.close(PORT, () => {
-    console.log(`Shut down on port: ${PORT}`)
-  })
-}
+export {start};
+
+// export const stop = () => {
+//   app.close(PORT, () => {
+//     console.log(`Shut down on port: ${PORT}`)
+//   })
+// }

@@ -1,0 +1,14 @@
+{
+    "extends": "@tsconfig/recommended/tsconfig.json",
+    "compilerOptions": {
+      "preserveConstEnums": true,
+      "moduleResolution": "node",
+      "noImplicitAny": false,
+      "module": "ES2015",
+        // "allowJs": true,
+    //   "checkJs": false
+    },
+    "include": ["src", "fuck.d.ts"],
+    "exclude": ["node_modules", "**/*.spec.ts"],
+    
+  }

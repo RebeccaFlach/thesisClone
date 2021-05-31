@@ -1,4 +1,4 @@
-export interface gradebook {
+export default interface gradebook {
     Gradebook: Gradebook;
   }
   export interface Gradebook {

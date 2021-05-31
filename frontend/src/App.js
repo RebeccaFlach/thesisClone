@@ -14,7 +14,7 @@ const App = () => {
 
     Http.onreadystatechange = (e) => {
       //console.log(JSON.parse(Http.responseText).message)
-      setGrades(JSON.parse(Http.responseText).message)
+      // setGrades(JSON.parse(Http.responseText).message)
     }
 
     const gradeGetter = new XMLHttpRequest();
@@ -23,15 +23,15 @@ const App = () => {
     gradeGetter.send();
 
     gradeGetter.onreadystatechange = (e) => {
-      console.log(gradeGetter.responseText)
-      
+      console.log(JSON.parse(gradeGetter.responseText))
+      setGrades(JSON.parse(gradeGetter.responseText));
     }
   }, [])
 
   return (
     <div className="App">
-      {/* {grades && grades.map(grade => <Grade grade={grade} />)} */}
-      {grades}
+      {grades.length > 0 && grades.map(grade => <Grade grade={grade} />)}
+      {/* {grades} */}
     </div>
   );
 }
