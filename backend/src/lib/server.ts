@@ -14,9 +14,9 @@ const router = express.Router();
 import https from 'https';
 import http from 'http';
 import fs from 'fs';
-
+import axios from 'axios';
 // env variables
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 5001;
 
 app.use(bodyParser.json(),cors())
 
@@ -29,10 +29,15 @@ app.use(bodyParser.json(),cors())
 app.use(cors({
   credentials: true,
   origin: (origin, cb) => {
-    const origins = [ 'https://localhost:3000', 'https://localhost:5000', 'https://mren-na1-localhost.io:3000', 'https://mren-na1-localhost.io:5000' ];
-    if(origin && // 2020.05.18 ERL - undefined if same-origin on prod?
-      !_(origins).contains(origin)){  // on local/dev, matches whitelist
-      // debug.logError(new Error("cors check failed: " + origin + " not in [" + config.CORS_ORIGINS.join(',') + "]"), "CORS error")
+    console.log(origin)
+    const origins = [
+      'https://localhost:3000', 
+      'https://localhost:6001', 
+      'https://mren-na1-localhost.io:3000', 
+      'https://mren-na1-localhost.io:6001', 
+      'http://localhost:19006',
+      'http://10.10.10.84:19006' ];
+    if(origin && !_(origins).contains(origin)){  
       cb(new Error('Origin CORS not allowed'))    
       console.log('fucked up');
       return
@@ -54,7 +59,7 @@ app.use(cors({
 // });
 app.use(session({
   secret:'Keep it secret', 
-  name:'uniqueSessionID', 
+  name:'sessionTest', 
   saveUninitialized:true, 
   resave: false,
   cookie: {
@@ -81,10 +86,10 @@ app.use('/api/grade', gradeRouter.router);
 
 const start = () => {
 
-  // var httpServer = http.createServer(app);
+  // var httpServer = http.createSserver(app);
   var httpsServer = https.createServer(credentials, app);
 
-  httpsServer.listen(5000, () =>{
+  httpsServer.listen(6001, () =>{
     console.log(`Listening on port: ${PORT}`)
   })
 }

@@ -8,35 +8,18 @@ const App = () => {
   const [name, setName] = React.useState();
   const [pass, setPass] = React.useState();
 
-  // React.useEffect(() => {
 
-  //   const gradeGetter = new XMLHttpRequest();
-  //   const gradeUrl ='http://localhost:5000/api/grade/grades/';
-  //   gradeGetter.open("GET", gradeUrl + gradePeriod );
-  //   gradeGetter.send();
-
-  //   gradeGetter.onreadystatechange = (e) => {
-  //     console.log(JSON.parse(gradeGetter.responseText))
-  //     setGrades(JSON.parse(gradeGetter.responseText));
-  //   }
-  // }, [gradePeriod])
+  const axiosConfig = {withCredentials: true}
+  const gradeUrl ='https://mren-na1-localhost.io:6001/api/grade/';
+  const login = () => {
+    axios.get(gradeUrl + 'login/' + name + '/' + pass, axiosConfig).then(console.log)
+  }
 
   const getGrades = () => {
-    // console.log(localStorage)
-    // const gradeGetter = new XMLHttpRequest();
-    // gradeGetter
-    const gradeUrl ='https://mren-na1-localhost.io:5000/api/grade/grades/';
-    axios.get(gradeUrl + gradePeriod + '',
-     {credentials: 'include',
-      
-        withCredentials: true,
-      
-    })
+    axios.get(gradeUrl + 'grades/' + gradePeriod, axiosConfig)
       .then((res) => {
         console.log(res)
         setGrades(res.data)
-      // console.log(JSON.parse(gradeGetter.responseText))
-      // setGrades(JSON.parse(gradeGetter.responseText));
     })
   }
 
@@ -49,14 +32,14 @@ const App = () => {
       </button> */}
       <input onBlur={(e) => {
         setName(e.target.value)
-        localStorage.setItem('name', e.target.value)
+        
         }} />
       <input onBlur={(e) => {
         setPass(e.target.value)
-        localStorage.setItem('pass', e.target.value)
+        
         }} />
       <button onClick={getGrades}>GET GRADES</button>
-
+      <button onClick={login}> login</button>
       {grades.length > 0 && grades.map(course => <Grade grade={course.grade} title={course.title} letterGrade={course.letterGrade}/>)}
       {/* {grades} */}
     </div>
