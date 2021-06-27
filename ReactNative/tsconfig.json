@@ -1,0 +1,11 @@
+{
+  "compilerOptions": {
+    "moduleResolution": "node",
+    "noImplicitAny": false,
+    "module": "ES2015",
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+
+  },
+  "extends": "expo/tsconfig.base"
+}
