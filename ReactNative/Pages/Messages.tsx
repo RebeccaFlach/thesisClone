@@ -14,7 +14,6 @@ import { MessageList, IMessage } from '../../backend/src/model/Messages';
 import { createStackNavigator } from '@react-navigation/stack';
 import Api from '../api';
 
-import _ from 'underscore';
 
 const Messages = ({navigation}) => {
     const [messages, setMessages] = React.useState<IMessage[]>(null);
@@ -44,12 +43,6 @@ const Messages = ({navigation}) => {
         />
     }
         return <View style={GlobalStyles.container}>
-            <Button
-                title="X"
-                onPress={() => parentNav.toggleDrawer()}
-            />
-            <Button onPress={getMessages} title="Refresh" />
-            
             <FlatList
                 data={messages}
                 renderItem={renderMessage}
@@ -78,8 +71,8 @@ const Message = (props) => {
     if (preview.length > 75)
         preview = preview.substring(0, 70) + '...';
 
-    preview = _(preview).repl
-
+    preview = preview.replaceAll('&#39;', `'`)
+ 
     return <Pressable 
         onPress={() => {props.nav.navigate('FullMessage', {...props})}} >
         <View style={[styles.message]}>
@@ -99,13 +92,13 @@ const FullMessage = ({route, navigation}) => {
             body {
                 background-color: #282c34;
                 color: #f0f0f0 !important;
-                font-size: 2.5rem;
+                font-size: 3.5rem;
                 max-width: 100%;
                 overflow-wrap: break-word;
             }
             span {
                 color: #f0f0f0 !important;
-                font-size: 2.5rem !important;
+                font-size: 3.5rem !important;
             }
             a {
                 color: #91ADD4 !important;
@@ -130,7 +123,6 @@ const styles = StyleSheet.create({
         minHeight: 50,
         borderBottomWidth: 1,
         borderBottomColor: '#666666',
-        // borderColor
     }
 })
 
