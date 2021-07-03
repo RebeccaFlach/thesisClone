@@ -1,55 +1,69 @@
 import React from 'react';
 import axios from 'axios';
-import { StyleSheet, Text, View, Button, TextInput, FlatList, ScrollView } from 'react-native';
+import { StyleSheet, Text, View, Button, TextInput, FlatList, Pressable } from 'react-native';
 import config from '../config';
 import GlobalStyles from '../GlobalStyles';
 
+// import purify from 'DOMpurify';
+import WebView from 'react-native-webview';
+
 import textVersion from 'textversionjs'
 
-import { MessageList, IMessage } from '../../backend/src/model/Messages'
+import { MessageList, IMessage } from '../../backend/src/model/Messages';
+
+import { createStackNavigator } from '@react-navigation/stack';
+import Api from '../api';
+
+import _ from 'underscore';
 
 const Messages = ({navigation}) => {
     const [messages, setMessages] = React.useState<IMessage[]>(null);
 
-    //test!
+    const Stack = createStackNavigator()
+ 
+    const parentNav = navigation;
+
     const getMessages = () => {
-        // axios.get(gradeUrl + 'ping').then(console.log)
-        // .catch(console.log)
-    
-        axios.get(config.url + 'messages', config.axiosOpts)
-          .then((res) => {
-            console.log(res.data)
-            setMessages(res.data)
-        })
+        const api = new Api('1301246779', '3.1415fuckyou')
+        api.getMessages().then(setMessages);
     }
 
     //api call to update read?
     React.useEffect(getMessages, []);
+    
+
+    const Main = ({navigation}) => {
+
     const renderMessage = ({ item }) => {
-
-
         return <Message 
-            subject={item.SubjectNoHTML} 
-            content={item.Content}
-            from={item.From}
-            date={item.BeginDate}
+            subject={item._attributes.SubjectNoHTML} 
+            content={item._attributes.Content}
+            from={item._attributes.From}
+            date={item._attributes.BeginDate}
+            nav={navigation}
         />
     }
+        return <View style={GlobalStyles.container}>
+            <Button
+                title="X"
+                onPress={() => parentNav.toggleDrawer()}
+            />
+            <Button onPress={getMessages} title="Refresh" />
+            
+            <FlatList
+                data={messages}
+                renderItem={renderMessage}
+                keyExtractor={(message) => message._attributes.ID}
+            />
 
-    return <View style={GlobalStyles.container}>
-        <Button
-            title="X"
-            onPress={() => navigation.toggleDrawer()}
-        />
-        <Button onPress={getMessages} title="Refresh" />
-        
-        <FlatList
-            data={messages}
-            renderItem={renderMessage}
-            keyExtractor={(message) => message.ID}
-        />
+        </View>
+    }
 
-    </View>
+    return <Stack.Navigator headerMode={'none'}>
+      <Stack.Screen component={Main} name='Messages' />
+      <Stack.Screen component={FullMessage} name={'FullMessage'}/>
+  </Stack.Navigator>
+
 }
 
 interface Props {
@@ -61,27 +75,62 @@ interface Props {
 
 const Message = (props) => {
     let preview = textVersion(props.content)
-    if (preview.length > 50)
-        preview = preview.substring(0, 50) + '...'
+    if (preview.length > 75)
+        preview = preview.substring(0, 70) + '...';
 
-    //make global shorten util function
-    return <Text style={[GlobalStyles.text, styles.message]}>
-        <Text style={{fontSize: 12, color: '#e0e0e0'}}>{ props.from.trim() }</Text> {'\n'}
-        <Text style={{fontSize: 20}}>{ props.subject.trim() }</Text> {'\n'}
-        <Text style={{color: '#d0d0d0'}}>{preview}</Text>
+    preview = _(preview).repl
 
-    </Text>
-    //class or sender (class preffered, can map that data) //date
-    //subject
-    //longish snippet
+    return <Pressable 
+        onPress={() => {props.nav.navigate('FullMessage', {...props})}} >
+        <View style={[styles.message]}>
+            <Text style={[GlobalStyles.text]}>
+                <Text style={{fontSize: 12, color: '#e0e0e0'}}>{ props.from }</Text> {'\n'}
+                <Text style={{fontSize: 20}}>{ props.subject }</Text> {'\n'}
+                <Text style={{color: '#d0d0d0'}}>{preview}</Text>
+
+            </Text>
+        </View>
+    </Pressable> 
+}
+
+const FullMessage = ({route, navigation}) => {
+    const style = `
+        <style>
+            body {
+                background-color: #282c34;
+                color: #f0f0f0 !important;
+                font-size: 2.5rem;
+                max-width: 100%;
+                overflow-wrap: break-word;
+            }
+            span {
+                color: #f0f0f0 !important;
+                font-size: 2.5rem !important;
+            }
+            a {
+                color: #91ADD4 !important;
+            }
+        </style>
+        
+    `;
+
+    return <View style={GlobalStyles.container}>
+        <WebView
+            style={GlobalStyles.container}
+            containerStyle={{backgroundColor: '#282c34',marginTop: 20, padding: 20, color:'#f0f0f0'}}
+            originWhitelist={['*']}
+            source={{ html:  style + route.params.content}}
+        />
+    </View>
 }
 
 const styles = StyleSheet.create({
     message: {
         padding: 20, 
         minHeight: 50,
-        borderBottomWidth: 0.5,
-        borderBottomColor: '#666666'
+        borderBottomWidth: 1,
+        borderBottomColor: '#666666',
+        // borderColor
     }
 })
 

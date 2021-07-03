@@ -1,20 +1,29 @@
 import React from 'react';
 import axios from 'axios';
 
-import { StyleSheet, Text, View, Button, TextInput, FlatList } from 'react-native';
+import { StyleSheet, Text, View, Button, TextInput, FlatList, Pressable } from 'react-native';
 import { slide as Menu } from 'react-burger-menu';
+
+import { createStackNavigator } from '@react-navigation/stack';
 
 import GlobalStyles from './GlobalStyles';
 import config from './config';
+import { NavigationContainer } from '@react-navigation/native';
+
+import {AssignmentEntity} from '../backend/src/model/GradeBook';
+
+import ClassView from './Pages/ClassView'
 
 interface Grade {
   title: string,
   grade: string,
-  letterGrade: string
+  letterGrade: string,
+  assignments: AssignmentEntity[],
 }
 
 const Homepage = ({ navigation }) => {
   const [grades, setGrades] = React.useState<Grade[]>();
+
 
   const getGrades = () => {
     axios.get(config.url + 'grades/5', config.axiosOpts)
@@ -25,21 +34,29 @@ const Homepage = ({ navigation }) => {
   }
   React.useEffect(getGrades, []);
 
+  const Stack = createStackNavigator()
  
+  const parentNav = navigation;
+
+  const Main = ({ navigation }) => {
   return (
     <View style={GlobalStyles.container}>
       <Header />
       <Button
         title="X"
-        onPress={() => navigation.toggleDrawer()}
+        onPress={() => parentNav.toggleDrawer()}
       />
       <FlatList
         data={grades}
         renderItem={({item}) => <Grade
+          nav={navigation}
           key={item.title} 
+
+          // {...item}
           title={item.title} 
           grade={item.grade} 
           letterGrade={item.letterGrade}
+          assignments={item.assignments}
         />}
 
         style={styles.gradeList}
@@ -49,6 +66,13 @@ const Homepage = ({ navigation }) => {
 
 
   )
+  }
+
+  return <Stack.Navigator headerMode={'none'}>
+      <Stack.Screen component={Main} name="Main" />
+      <Stack.Screen component={ClassView} name={'ClassView'}/>
+  </Stack.Navigator>
+
 }
 
 const Grade = (props) => {
@@ -73,20 +97,18 @@ const Grade = (props) => {
     return <Text style = {{fontSize: 40, color: color}}>{props.letterGrade}</Text>
   }
   
-  return <View style={[styles.courseSection, GlobalStyles.section]}>
+  return <Pressable 
+    onPress={() => {props.nav.navigate('ClassView', {title: props.title, assignments: props.assignments})}} 
+    style={[styles.courseSection, GlobalStyles.section]}
+  >
     <LetterGrade />
     <Text style={[GlobalStyles.text, {fontSize: 20, marginLeft: 20, marginRight: 20} ]} numberOfLines={1}> {props.title} </Text> 
     <Text style={[GlobalStyles.text, {fontSize: 30}]} >{ props.grade } </Text>
-   
-  </View>
+  </Pressable>
 }
 
 const Header = () => {
   return (<View style={styles.header}>
-    <Menu style={{backgroundColor: 'white'}}>
-      <Text> hi</Text>
-      <Text> test</Text>
-    </Menu>
 
     <Text style={{color: '#f0f0f0', fontSize: 30}}>Quarter 3</Text>
   </View>)

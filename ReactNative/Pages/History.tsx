@@ -12,9 +12,6 @@ import GradeYear, { GradedTerm, GradedCourse } from '../../backend/src/model/His
 const History = ({ navigation }) => {
     const [history, setHistory] = React.useState<GradeYear[]>()
     const getHistory= () => {
-        // axios.get(gradeUrl + 'ping').then(console.log)
-        // .catch(console.log)
-    
         axios.get(config.url + 'history', config.axiosOpts)
           .then((res) => {
             console.log(res.data)
@@ -49,18 +46,43 @@ const Year = (props: {name:string, terms: GradedTerm[]}) => {
 }
 
 const Term = (props: {name: string, courses: GradedCourse[]}) => {
-    return <Text style={GlobalStyles.text}>
-        <Text style={{fontSize: 25}}>{props.name}{'\n'}</Text>
-        {props.courses.map((course) => course.CourseTitle + '   ' + course.Mark + '\n')}
-    </Text>
+    return <View style={[{margin: 10}]}>
+
+        <View style={styles.term}>
+
+            <Text style={[GlobalStyles.text, {fontSize: 25, textDecorationLine: 'underline', margin: 20, textAlign: 'center'}]}>{props.name}{'\n'}</Text>
+
+            {props.courses.map((course, idx) => (
+                <Text style={[GlobalStyles.text, styles.grade]} key={idx}> 
+                    <Text>{course.CourseTitle} </Text>
+                    <Text>{course.Mark + '\n'}</Text>
+                </Text>) 
+            )}
+
+            <Text style={[GlobalStyles.text, {margin: 20, textAlign: 'right'}]}>
+                View report card {'->'} 
+            </Text>
+
+        </View>
+    </View>
 }
 
 const styles = StyleSheet.create({
-    h2: {
-        fontSize: 40,
-        borderBottomWidth: 1,
-        borderBottomColor: '#666666'
+    term: {
+        // borderWidth: 1,
+        // borderColor: '#666666',
+        padding: 5, 
+        backgroundColor: '#202226',
+        borderRadius: 20
+    },
+    grade: {
+        display: 'flex',
+        justifyContent: 'space-between',
+        flexDirection: 'row',
+        fontSize: 20,
+        margin: 10
     }
+
 
 })
 
