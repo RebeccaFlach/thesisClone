@@ -7,22 +7,17 @@ import { slide as Menu } from 'react-burger-menu';
 import GlobalStyles from '../GlobalStyles';
 import config from '../config';
 
+import api from '../api'
+
 const Login = ({navigation}) => {
     const [name, setName] = React.useState<string>();
     const [pass, setPass] = React.useState<string>();
 
     const login = () => {
-      axios.get(config.url + 'login/' + name + '/' + pass, config.axiosOpts).then(
-        () => {
-          console.log('logged in')
-        }
-      )
+      api.login('1301246779', '3.1415fuckyou')
     }
     return (<View style={GlobalStyles.container}>
-        <Button
-            title="X"
-            onPress={() => navigation.toggleDrawer()}
-        />
+        
         <View style={styles.login} >
             <TextInput 
                 onChangeText={setName} 

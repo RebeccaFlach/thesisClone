@@ -14,11 +14,15 @@ import {AssignmentEntity} from '../backend/src/model/GradeBook';
 
 import ClassView from './Pages/ClassView'
 
+import api from './api'
+
 interface Grade {
   title: string,
   grade: string,
   letterGrade: string,
   assignments: AssignmentEntity[],
+  teacher: string, 
+  room: string,
 }
 
 const Homepage = ({ navigation }) => {
@@ -26,11 +30,7 @@ const Homepage = ({ navigation }) => {
 
 
   const getGrades = () => {
-    axios.get(config.url + 'grades/5', config.axiosOpts)
-      .then((res) => {
-        console.log(res)
-        setGrades(res.data)
-    })
+    api.getGrades().then(setGrades)
   }
   React.useEffect(getGrades, []);
 
@@ -42,23 +42,15 @@ const Homepage = ({ navigation }) => {
   return (
     <View style={GlobalStyles.container}>
       <Header />
-      <Button
-        title="X"
-        onPress={() => parentNav.toggleDrawer()}
-      />
       <FlatList
         data={grades}
         renderItem={({item}) => <Grade
           nav={navigation}
-          key={item.title} 
-
-          // {...item}
-          title={item.title} 
-          grade={item.grade} 
-          letterGrade={item.letterGrade}
-          assignments={item.assignments}
+          info={item}
+          key={item.title}
         />}
 
+        keyExtractor={(course) => course.title}
         style={styles.gradeList}
       />
 
@@ -78,7 +70,7 @@ const Homepage = ({ navigation }) => {
 const Grade = (props) => {
   const LetterGrade = () => {
     let color;
-    switch(props.letterGrade){
+    switch(props.info.letterGrade){
       case 'A': 
         color = '#63ff00';
         break;
@@ -94,16 +86,20 @@ const Grade = (props) => {
       default: 
         color = '#ff0000';
     }
-    return <Text style = {{fontSize: 40, color: color}}>{props.letterGrade}</Text>
+    return <Text style = {{fontSize: 40, color: color}}>{props.info.letterGrade}</Text>
   }
   
   return <Pressable 
-    onPress={() => {props.nav.navigate('ClassView', {title: props.title, assignments: props.assignments})}} 
+    onPress={() => {props.nav.navigate('ClassView', props.info)}} 
     style={[styles.courseSection, GlobalStyles.section]}
   >
     <LetterGrade />
-    <Text style={[GlobalStyles.text, {fontSize: 20, marginLeft: 20, marginRight: 20} ]} numberOfLines={1}> {props.title} </Text> 
-    <Text style={[GlobalStyles.text, {fontSize: 30}]} >{ props.grade } </Text>
+    <Text style={[GlobalStyles.text, {fontSize: 20, marginLeft: 20, marginRight: 20, flex: 1} ]} 
+      numberOfLines={1}
+    >
+      {props.info.title} 
+    </Text> 
+    <Text style={[GlobalStyles.text, {fontSize: 30}]} >{ props.info.grade } </Text>
   </Pressable>
 }
 
@@ -122,7 +118,7 @@ const styles = StyleSheet.create({
     height: '100%',
   },
   courseSection : {
-    display: 'flex',
+    flex: 1,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',

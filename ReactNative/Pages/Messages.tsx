@@ -12,7 +12,7 @@ import textVersion from 'textversionjs'
 import { MessageList, IMessage } from '../../backend/src/model/Messages';
 
 import { createStackNavigator } from '@react-navigation/stack';
-import Api from '../api';
+import api from '../api';
 
 
 const Messages = ({navigation}) => {
@@ -23,11 +23,12 @@ const Messages = ({navigation}) => {
     const parentNav = navigation;
 
     const getMessages = () => {
-        const api = new Api('1301246779', '3.1415fuckyou')
         api.getMessages().then(setMessages);
     }
 
-    //api call to update read?
+    console.log(api.loggedIn)
+
+    //api call to update rea
     React.useEffect(getMessages, []);
     
 
