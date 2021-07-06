@@ -26,44 +26,51 @@ interface Grade {
 }
 
 const Homepage = ({ navigation }) => {
-  const [grades, setGrades] = React.useState<Grade[]>();
-
-
-  const getGrades = () => {
-    api.getGrades().then(setGrades)
-  }
-  React.useEffect(getGrades, []);
+  
 
   const Stack = createStackNavigator()
  
   const parentNav = navigation;
 
   const Main = ({ navigation }) => {
-  return (
-    <View style={GlobalStyles.container}>
-      <Header />
-      <FlatList
-        data={grades}
-        renderItem={({item}) => <Grade
-          nav={navigation}
-          info={item}
-          key={item.title}
-        />}
 
-        keyExtractor={(course) => course.title}
-        style={styles.gradeList}
-      />
+    const [refreshing, setRefreshing] = React.useState(false);
+    const [grades, setGrades] = React.useState<Grade[]>();
+
+    React.useEffect(() => {api.getGrades().then(setGrades)}, []);
+
+	const onRefresh = React.useCallback(() => {
+		setRefreshing(true);
+		api.getGrades().then((data) => {
+			setGrades(data);
+			setRefreshing(false)
+		})
+	}, []);
+
+    return <View style={GlobalStyles.container}>
+        <Header />
+        <FlatList
+          data={grades}
+          renderItem={({item}) => <Grade
+            nav={navigation}
+            info={item}
+            key={item.title}
+          />}
+
+          keyExtractor={(course) => course.title}
+          style={styles.gradeList}
+
+          refreshing={refreshing}
+          onRefresh={onRefresh}
+        />
 
     </View>
+  	}
 
-
-  )
-  }
-
-  return <Stack.Navigator headerMode={'none'}>
-      <Stack.Screen component={Main} name="Main" />
-      <Stack.Screen component={ClassView} name={'ClassView'}/>
-  </Stack.Navigator>
+	return <Stack.Navigator headerMode={'none'}>
+		<Stack.Screen component={Main} name="Main" />
+		<Stack.Screen component={ClassView} name={'ClassView'}/>
+	</Stack.Navigator>
 
 }
 

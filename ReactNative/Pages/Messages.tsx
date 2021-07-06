@@ -1,6 +1,6 @@
 import React from 'react';
 import axios from 'axios';
-import { StyleSheet, Text, View, Button, TextInput, FlatList, Pressable } from 'react-native';
+import { StyleSheet, Text, View, Button, TextInput, FlatList, Pressable, ScrollView, RefreshControl, ListView } from 'react-native';
 import config from '../config';
 import GlobalStyles from '../GlobalStyles';
 
@@ -15,24 +15,24 @@ import { createStackNavigator } from '@react-navigation/stack';
 import api from '../api';
 
 
-const Messages = ({navigation}) => {
-    const [messages, setMessages] = React.useState<IMessage[]>(null);
-
+const Messages = () => {
     const Stack = createStackNavigator()
- 
-    const parentNav = navigation;
-
-    const getMessages = () => {
-        api.getMessages().then(setMessages);
-    }
-
     console.log(api.loggedIn)
 
-    //api call to update rea
-    React.useEffect(getMessages, []);
+    //api call to update read
     
+    return <Stack.Navigator headerMode={'none'}>
+      <Stack.Screen component={Main} name='Messages' />
+      <Stack.Screen component={FullMessage} name={'FullMessage'}/>
+  </Stack.Navigator>
 
-    const Main = ({navigation}) => {
+}
+
+const Main = ({navigation}) => {
+    const [messages, setMessages] = React.useState<IMessage[]>(null);
+    const [refreshing, setRefreshing] = React.useState(false);
+
+    React.useEffect(() => {api.getMessages().then(setMessages)}, []);
 
     const renderMessage = ({ item }) => {
         return <Message 
@@ -43,22 +43,31 @@ const Messages = ({navigation}) => {
             nav={navigation}
         />
     }
-        return <View style={GlobalStyles.container}>
-            <FlatList
-                data={messages}
-                renderItem={renderMessage}
-                keyExtractor={(message) => message._attributes.ID}
-            />
 
-        </View>
-    }
+    const onRefresh = React.useCallback(() => {
+        setRefreshing(true);
+        // api.getHistory()
+        api.getMessages().then((data) => {
+            setMessages(data);
+            setRefreshing(false)
+        })
+    }, []);
+    return <View 
+        
+        style={GlobalStyles.container}
+    >
+        <FlatList
+            data={messages}
+            renderItem={renderMessage}
+            keyExtractor={(message) => message._attributes.ID}
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+        />
 
-    return <Stack.Navigator headerMode={'none'}>
-      <Stack.Screen component={Main} name='Messages' />
-      <Stack.Screen component={FullMessage} name={'FullMessage'}/>
-  </Stack.Navigator>
-
+    </View>
 }
+
+
 
 interface Props {
     subject: string,
@@ -72,10 +81,14 @@ const Message = (props) => {
     if (preview.length > 75)
         preview = preview.substring(0, 70) + '...';
 
-    preview = preview.replaceAll('&#39;', `'`)
+    preview = preview.replaceAll('&#39;', `'`) //yeah ill do this properly eventually
  
     return <Pressable 
-        onPress={() => {props.nav.navigate('FullMessage', {...props})}} >
+        onPress={() => {
+            props.nav.navigate('FullMessage', 
+            {subject: props.subject, content: props.content, from: props.from, date: props.date}
+            )}
+        } >
         <View style={[styles.message]}>
             <Text style={[GlobalStyles.text]}>
                 <Text style={{fontSize: 12, color: '#e0e0e0'}}>{ props.from }</Text> {'\n'}
@@ -96,6 +109,8 @@ const FullMessage = ({route, navigation}) => {
                 font-size: 3.5rem;
                 max-width: 100%;
                 overflow-wrap: break-word;
+                padding: 40px;
+                margin-top: 40px;
             }
             span {
                 color: #f0f0f0 !important;
@@ -111,7 +126,7 @@ const FullMessage = ({route, navigation}) => {
     return <View style={GlobalStyles.container}>
         <WebView
             style={GlobalStyles.container}
-            containerStyle={{backgroundColor: '#282c34',marginTop: 20, padding: 20, color:'#f0f0f0'}}
+            containerStyle={{backgroundColor: '#282c34', color:'#f0f0f0'}}
             originWhitelist={['*']}
             source={{ html:  style + route.params.content}}
         />
