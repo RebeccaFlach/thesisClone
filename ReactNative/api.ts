@@ -13,11 +13,33 @@ const Api = {
         this.loggedIn = true
     },
 
-    request (method:string) {
+    request (method:string, params={}) {
         const pass = this.pass;
-        const user = this.user
+        const user = this.user;
+        let paramStr = '&lt;Parms&gt;';
+        Object.entries(params).forEach(([key, value]) => {
+            paramStr += '&lt;' + key + '&gt;';
+            paramStr += value;
+            paramStr += '&lt;/' + key + '&gt;';
+        });
+        paramStr += '&lt;/Parms&gt;';
+
         return axios.post('https://student.tusd1.org/Service/PXPCommunication.asmx',
-            `<?xml version="1.0" encoding="utf-8"?>\n<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"><soap:Body><ProcessWebServiceRequest xmlns="http://edupoint.com/webservices/"><userID>${user}</userID><password>${pass}</password><skipLoginLog>1</skipLoginLog><parent>0</parent><webServiceHandleName>PXPWebServices</webServiceHandleName><methodName>${method}</methodName><paramStr>&lt;Parms&gt;&lt;ChildIntID&gt;0&lt;/ChildIntID&gt;&lt;/Parms&gt;</paramStr></ProcessWebServiceRequest></soap:Body></soap:Envelope>`,
+            `<?xml version="1.0" encoding="utf-8"?>\n
+            <soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+                <soap:Body>
+                    <ProcessWebServiceRequest xmlns="http://edupoint.com/webservices/">
+                        <userID>${user}</userID>
+                        <password>${pass}</password>
+                        <skipLoginLog>1</skipLoginLog>
+                        <parent>0</parent>
+                        <webServiceHandleName>PXPWebServices</webServiceHandleName>
+                        <methodName>${method}</methodName>
+                        <paramStr>${paramStr}</paramStr>
+                    </ProcessWebServiceRequest>
+                </soap:Body>
+            </soap:Envelope>`,
+
             {headers:{
                 'Content-Type': 'text/xml; charset=utf-8',
                 SOAPAction: 'http://edupoint.com/webservices/ProcessWebServiceRequest'
@@ -28,15 +50,13 @@ const Api = {
 
     parseData(promise) {
         return promise.then((res) =>  {
-            // console.log(res)
+
             const response = convert.xml2js(res.data, {compact: true});
 
             const data = convert.xml2js(response['soap:Envelope']['soap:Body'].ProcessWebServiceRequestResponse.ProcessWebServiceRequestResult._text
                 , {compact: true}
             )
 
-            // console.log(data)
-            
             return data;
         })
 
@@ -54,9 +74,8 @@ const Api = {
             .then((gradebook) => {
                 const courses = gradebook.Gradebook.Courses.Course;
 
-                console.log(courses[1])
+                console.log('done')
                 const summary = courses.map((course) => {
-                    //_.pick
                     return {
                         title: course._attributes.Title,
                         teacher: course._attributes.Staff,
@@ -68,9 +87,35 @@ const Api = {
                     }
                 });
 
-                // console.log(summary)
                 return summary;
             })
+    },
+
+    getAuthToken() {
+        const params = {
+            username: this.user,
+            TokenForClassWebsite: true,
+            Usertype: 0,
+            IsParentStudent: 0,
+            DocumentID: 1,
+            AssignmentID: 1
+        }
+
+        return this.parseData(this.request('GenerateAuthToken', params)).then(data => data.AuthToken._attributes.EncyToken)
+    },
+
+    async getHistory() {
+        const token = await this.getAuthToken()
+            
+        const res = await axios.get('https://student.tusd1.org/PXP2_CourseHistory.aspx?token=' + token + '&AGU=0')
+        const data = res.data
+
+        const arrayIndex = data.indexOf('PXP.CourseHistory =') + 20;
+        const arrayEnd = data.indexOf('PXP.Translations.CourseHistory') - 3;
+        const history = JSON.parse(data.substring(arrayIndex, arrayEnd).trim());
+
+        return history
+        // console.log(history)
     }
 
 }

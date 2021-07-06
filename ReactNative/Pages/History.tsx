@@ -5,38 +5,42 @@ import config from '../config';
 import GlobalStyles from '../GlobalStyles';
 
 import textVersion from 'textversionjs'
-import * as dayjs from 'dayjs'
+import * as dayjs from 'dayjs';
+
+import api from '../api'
 
 import GradeYear, { GradedTerm, GradedCourse } from '../../backend/src/model/History'
 
 const History = ({ navigation }) => {
-    const [history, setHistory] = React.useState<GradeYear[]>()
-    const getHistory= () => {
-        axios.get(config.url + 'history', config.axiosOpts)
-          .then((res) => {
-            console.log(res.data)
-            setHistory(res.data)
-        })
-    }
+    const [history, setHistory] = React.useState<GradeYear[]>();
+    const [refreshing, setRefreshing] = React.useState(false);
 
-    React.useEffect(getHistory, [])
+
+    const onRefresh = React.useCallback(() => {
+        setRefreshing(true);
+        api.getHistory().then((data) => {
+            setHistory(data);
+            setRefreshing(false)
+        })
+    }, []);
+
+    React.useEffect(() => {api.getHistory().then(setHistory)}, [])
 
     return <View style={GlobalStyles.container}>
-        <Button
-            title="X"
-            onPress={() => navigation.toggleDrawer()}
-        />
         <FlatList
             data={history}
             renderItem={({item}) => <Year name={item.Grade} terms={item.Terms} />}
             keyExtractor={(year) => year.Grade}
+
+            refreshing={refreshing}
+            onRefresh={onRefresh}
         />
     </View>
 }
 
 
 const Year = (props: {name:string, terms: GradedTerm[]}) => {
-    return ( <View style={[GlobalStyles.section, {padding: 20}]}>
+    return ( <View style={[GlobalStyles.section, {padding: 10}]}>
         <Text style={[GlobalStyles.text, {fontSize: 35}]}>{props.name}</Text>
 
         {props.terms.map((term,idx) => <Term name={term.TermName} courses={term.Courses} key={idx} />)}
@@ -46,41 +50,45 @@ const Year = (props: {name:string, terms: GradedTerm[]}) => {
 }
 
 const Term = (props: {name: string, courses: GradedCourse[]}) => {
-    return <View style={[{margin: 10}]}>
+    return <View style={styles.term}>
 
-        <View style={styles.term}>
+        <Text style={[GlobalStyles.text, {fontSize: 25, textDecorationLine: 'underline', textAlign: 'center'}]}>{props.name}{'\n'}</Text>
 
-            <Text style={[GlobalStyles.text, {fontSize: 25, textDecorationLine: 'underline', margin: 20, textAlign: 'center'}]}>{props.name}{'\n'}</Text>
+        {props.courses.map((course, idx) => (
+            <View style={[ styles.grade]} key={idx}> 
+                <Text 
+                    style={[{flex: 1, fontSize: 20, marginRight: 10}, GlobalStyles.text]} 
+                    numberOfLines={1}
+                >
+                    {course.CourseTitle} 
+                </Text>
+                <Text style={[{fontSize: 30}, GlobalStyles.text]}>
+                    {course.Mark}
+                </Text>
+            </View>) 
+        )}
 
-            {props.courses.map((course, idx) => (
-                <Text style={[GlobalStyles.text, styles.grade]} key={idx}> 
-                    <Text>{course.CourseTitle} </Text>
-                    <Text>{course.Mark + '\n'}</Text>
-                </Text>) 
-            )}
+        <Text style={[GlobalStyles.text, {margin: 20, textAlign: 'right'}]}>
+            View report card {'->'} 
+        </Text>
 
-            <Text style={[GlobalStyles.text, {margin: 20, textAlign: 'right'}]}>
-                View report card {'->'} 
-            </Text>
-
-        </View>
     </View>
 }
 
 const styles = StyleSheet.create({
     term: {
-        // borderWidth: 1,
-        // borderColor: '#666666',
-        padding: 5, 
+        padding: 15, 
         backgroundColor: '#202226',
-        borderRadius: 20
+        borderRadius: 20,
+        marginBottom: 10
     },
     grade: {
-        display: 'flex',
+        flex: 1,
         justifyContent: 'space-between',
         flexDirection: 'row',
+        alignItems: 'center',
+        maxHeight: 35,
         fontSize: 20,
-        margin: 10
     }
 
 
