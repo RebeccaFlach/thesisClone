@@ -1,30 +1,50 @@
 import React from 'react';
-import axios from 'axios';
-import { StyleSheet, Text, View, Button, TextInput, FlatList, ScrollView } from 'react-native';
-import config from '../config';
+import { StyleSheet, Text, View, FlatList, Pressable } from 'react-native';
+
 import GlobalStyles from '../GlobalStyles';
-
-import textVersion from 'textversionjs'
-import * as dayjs from 'dayjs';
-
 import api from '../api'
 
-import GradeYear, { GradedTerm, GradedCourse } from '../../backend/src/model/History'
+import GradeYear, { GradedTerm, GradedCourse } from '../../backend/src/model/History';
 
-const History = ({ navigation }) => {
+const History = () => {
     const [history, setHistory] = React.useState<GradeYear[]>();
+    const [unweighted, setUnweighted] = React.useState<string>();
+    const [weighted, setWeighted] = React.useState<string>();
     const [refreshing, setRefreshing] = React.useState(false);
-
 
     const onRefresh = React.useCallback(() => {
         setRefreshing(true);
         api.getHistory().then((data) => {
-            setHistory(data);
+            setHistory(data.history);
+            setUnweighted(data.unweighted)
+            setWeighted(data.weighted)
             setRefreshing(false)
         })
     }, []);
 
-    React.useEffect(() => {api.getHistory().then(setHistory)}, [])
+    React.useEffect(() => {api.getHistory().then((data) => {
+        setHistory(data.history)
+        setUnweighted(data.unweighted)
+        setWeighted(data.weighted)
+    })}, [])
+
+    const Header = () => {
+        return <View style={[{padding: 20, marginBottom: 20}, GlobalStyles.section]}>
+
+            <Text style={[{fontSize: 35}, GlobalStyles.text]}>GPA</Text>
+            <Text style={[GlobalStyles.secondaryText, {fontSize: 20}]}>
+                Weighted: {weighted}
+            </Text>
+            <Text style={[GlobalStyles.secondaryText, {fontSize: 20}]}>
+                Unweighted: {unweighted}
+            </Text>
+
+            <Pressable>
+                <Text>Report Cards</Text> 
+            </Pressable>
+
+        </View>
+    }
 
     return <View style={GlobalStyles.container}>
         <FlatList
@@ -34,14 +54,18 @@ const History = ({ navigation }) => {
 
             refreshing={refreshing}
             onRefresh={onRefresh}
+
+            ListHeaderComponent={Header}
         />
     </View>
 }
 
 
 const Year = (props: {name:string, terms: GradedTerm[]}) => {
-    return ( <View style={[GlobalStyles.section, {padding: 10}]}>
-        <Text style={[GlobalStyles.text, {fontSize: 35}]}>{props.name}</Text>
+    return ( <View style={[GlobalStyles.section]}>
+        <Text style={[GlobalStyles.text, {fontSize: 35, textAlign: 'center', padding: 15}]}>
+            {props.name}
+        </Text>
 
         {props.terms.map((term,idx) => <Term name={term.TermName} courses={term.Courses} key={idx} />)}
     </View>
@@ -52,12 +76,14 @@ const Year = (props: {name:string, terms: GradedTerm[]}) => {
 const Term = (props: {name: string, courses: GradedCourse[]}) => {
     return <View style={styles.term}>
 
-        <Text style={[GlobalStyles.text, {fontSize: 25, textDecorationLine: 'underline', textAlign: 'center'}]}>{props.name}{'\n'}</Text>
+        <Text style={[GlobalStyles.text, {fontSize: 25, textDecorationLine: 'underline',}]}>
+            {props.name}{'\n'}
+        </Text>
 
         {props.courses.map((course, idx) => (
             <View style={[ styles.grade]} key={idx}> 
                 <Text 
-                    style={[{flex: 1, fontSize: 20, marginRight: 10}, GlobalStyles.text]} 
+                    style={[{flex: 1, fontSize: 20, marginRight: 10}, GlobalStyles.secondaryText]} 
                     numberOfLines={1}
                 >
                     {course.CourseTitle} 
@@ -67,11 +93,6 @@ const Term = (props: {name: string, courses: GradedCourse[]}) => {
                 </Text>
             </View>) 
         )}
-
-        <Text style={[GlobalStyles.text, {margin: 20, textAlign: 'right'}]}>
-            View report card {'->'} 
-        </Text>
-
     </View>
 }
 
@@ -80,7 +101,10 @@ const styles = StyleSheet.create({
         padding: 15, 
         backgroundColor: '#202226',
         borderRadius: 20,
-        marginBottom: 10
+        margin: 15,
+        shadowColor: 'black',
+        shadowOpacity: 0.2,
+        shadowRadius: 10
     },
     grade: {
         flex: 1,
