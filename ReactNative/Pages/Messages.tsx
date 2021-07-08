@@ -13,26 +13,29 @@ import { MessageList, IMessage } from '../../backend/src/model/Messages';
 
 import { createStackNavigator } from '@react-navigation/stack';
 import api from '../api';
+import SkeletonContent from 'react-native-skeleton-content';
 
 
 const Messages = () => {
     const Stack = createStackNavigator()
-    console.log(api.loggedIn)
-
     //api call to update read
     
     return <Stack.Navigator headerMode={'none'}>
-      <Stack.Screen component={Main} name='Messages' />
-      <Stack.Screen component={FullMessage} name={'FullMessage'}/>
-  </Stack.Navigator>
+        <Stack.Screen component={Main} name='Messages' />
+        <Stack.Screen component={FullMessage} name={'FullMessage'}/>
+    </Stack.Navigator>
 
 }
 
 const Main = ({navigation}) => {
     const [messages, setMessages] = React.useState<IMessage[]>(null);
     const [refreshing, setRefreshing] = React.useState(false);
+    const [loading, setLoading] = React.useState<boolean>(true)
 
-    React.useEffect(() => {api.getMessages().then(setMessages)}, []);
+    React.useEffect(() => {api.getMessages().then((data) => {
+        setMessages(data);
+        setLoading(false);
+    })}, []);
 
     const renderMessage = ({ item }) => {
         return <Message 
@@ -46,23 +49,34 @@ const Main = ({navigation}) => {
 
     const onRefresh = React.useCallback(() => {
         setRefreshing(true);
-        // api.getHistory()
         api.getMessages().then((data) => {
             setMessages(data);
             setRefreshing(false)
         })
     }, []);
-    return <View 
-        
-        style={GlobalStyles.container}
-    >
-        <FlatList
-            data={messages}
-            renderItem={renderMessage}
-            keyExtractor={(message) => message._attributes.ID}
-            refreshing={refreshing}
-            onRefresh={onRefresh}
-        />
+
+    const messageSkeleton = {
+	  ...styles.message, width: '100%', padding: 10, children: [
+          {key: 'subject', width: '80%', height: 30, margin: 10},
+          {key: 'text', width: '60%', height: 25, margin: 10}
+      ]
+    }
+
+    return <View  style={GlobalStyles.container}>
+        <SkeletonContent 
+            layout={Array(4).fill(messageSkeleton)}
+            isLoading={loading}
+            boneColor="#121212"
+			highlightColor="#333333"
+        >
+            <FlatList
+                data={messages}
+                renderItem={renderMessage}
+                keyExtractor={(message) => message._attributes.ID}
+                refreshing={refreshing}
+                onRefresh={onRefresh}
+            />
+        </SkeletonContent>
 
     </View>
 }
