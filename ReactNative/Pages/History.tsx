@@ -8,12 +8,16 @@ import GradeYear, { GradedTerm, GradedCourse } from '../../backend/src/model/His
 import { createStackNavigator } from '@react-navigation/stack';
 
 import PDFReader from 'rn-pdf-reader-js';
+import SkeletonContent from 'react-native-skeleton-content';
 
 const Main = ({navigation}) => {
     const [history, setHistory] = React.useState<GradeYear[]>();
     const [unweighted, setUnweighted] = React.useState<string>();
     const [weighted, setWeighted] = React.useState<string>();
-    const [refreshing, setRefreshing] = React.useState(false);
+
+    const [refreshing, setRefreshing] = React.useState<boolean>(false);
+    const [loading, setLoading] = React.useState<boolean>(true)
+
 
     const onRefresh = React.useCallback(() => {
         setRefreshing(true);
@@ -26,14 +30,16 @@ const Main = ({navigation}) => {
     }, []);
 
     React.useEffect(() => {api.getHistory().then((data) => {
-        setHistory(data.history)
-        setUnweighted(data.unweighted)
-        setWeighted(data.weighted)
+        setLoading(false);
+
+        setHistory(data.history);
+        setUnweighted(data.unweighted);
+        setWeighted(data.weighted);
     })}, [])
 
 
     const Header = () => {
-        return <View style={[{padding: 20, marginBottom: 20}, GlobalStyles.section]}>
+        return <View style={[styles.header, GlobalStyles.section]}>
 
             <Text style={[{fontSize: 35}, GlobalStyles.text]}>GPA</Text>
             <Text style={[GlobalStyles.secondaryText, {fontSize: 20}]}>
@@ -49,7 +55,28 @@ const Main = ({navigation}) => {
         </View>
     }
 
+    const skeletons = [
+        {...styles.header, ...GlobalStyles.section, width: '100%', children: [
+            {key: 'title', width: 80, height: 40, margin: 5},
+            {key: 'text1', width: 200, height: 25, margin: 5},
+            {key: 'text2', width: 200, height: 25, margin: 5},
+        ]
+        },
+        {width: '100%', ...styles.skeletonBlock, children: [
+            {key: 'title', height: 40, width: 80, margin: 30},
+            {key: 'block', height: 300, width: '90%'}
+        ]}
+
+    ]
+
     return <View style={GlobalStyles.container}>
+        <SkeletonContent 
+            boneColor="#121212"
+			highlightColor="#333333"
+			containerStyle={{width: '100%', flex: 1}}
+            isLoading={loading}
+            layout={skeletons}
+        >
         <FlatList
             data={history}
             renderItem={({item}) => <Year name={item.Grade} terms={item.Terms} />}
@@ -60,6 +87,7 @@ const Main = ({navigation}) => {
 
             ListHeaderComponent={Header}
         />
+        </SkeletonContent>
     </View>
 }
 
@@ -180,6 +208,15 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         maxHeight: 35,
         fontSize: 20,
+    },
+    header: {
+        padding: 20, 
+        marginBottom: 20, 
+        height: 150
+    },
+    skeletonBlock: {
+        alignItems: 'center',
+        flex: 1
     }
 
 
