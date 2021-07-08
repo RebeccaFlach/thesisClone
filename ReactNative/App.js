@@ -1,13 +1,15 @@
 import 'react-native-gesture-handler';
 import React from 'react';
 import axios from 'axios';
-import { StyleSheet, Text, View, Button, TextInput } from 'react-native';
+import { StyleSheet, Text, View, Button, TextInput, StatusBar } from 'react-native';
 
 //nav
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+
+import ExpoStatusBar from 'expo-status-bar/build/ExpoStatusBar';
 
 //screens
 import Homepage from './Homepage';
@@ -17,11 +19,14 @@ import History from './Pages/History';
 import Login from './Pages/Login';
 
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import GlobalStyles from './GlobalStyles';
 
 export default function App() {
   const Tabs = createBottomTabNavigator();
 
-  return  <NavigationContainer>
+  return  <NavigationContainer >
+    <StatusBar barStyle='light-content'></StatusBar>
+    <View style={[{height: 22, backgroundColor: '#282c34',}, GlobalStyles.section]}></View>
     <Tabs.Navigator 
       tabBarOptions={{
         style: {
@@ -29,6 +34,7 @@ export default function App() {
         }
       }}
     >
+      
       <Tabs.Screen name='Login' component={Login} 
         //https://reactnavigation.org/docs/headers
       />
