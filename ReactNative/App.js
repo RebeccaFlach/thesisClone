@@ -26,17 +26,28 @@ export default function App() {
   const Tabs = createBottomTabNavigator();
   const [loggedIn, setLoggedIn] = React.useState(false)
 
+  const [domain, setDomain] = React.useState();
+  const [name, setName] = React.useState();
+  const [pass, setPass] = React.useState();
+
   const login = (domain, name, pass) => {
+    setDomain(domain)
+    setName(name)
+    setPass(pass)
     api.login(domain, name, pass)
     setLoggedIn(true)
   }
 
-
-  //fucking hate this. works for now for basic testing without breaking everything
   const Test = () => {
     return <Login login={login} />
   }
-  React.useEffect(() => {setLoggedIn(false)}, [])
+  React.useEffect(() => {
+
+    //so don't have to login every time reload, for testing only
+    if (loggedIn)
+      api.login(domain, name, pass)
+  
+  }, [])
 
   return  <NavigationContainer >
     <StatusBar barStyle='light-content'></StatusBar>
