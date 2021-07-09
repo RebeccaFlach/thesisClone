@@ -71,7 +71,7 @@ const Main = ({ navigation }) => {
 	}
 
     return <View style={GlobalStyles.container}>
-        <Header />
+        {/* <Header /> */}
 		<SkeletonContent
 			isLoading={loading}
 			boneColor="#121212"
@@ -100,6 +100,8 @@ const Main = ({ navigation }) => {
     </View>
   	}
 
+	  //Es instead of F's fucking hell why
+
 const Grade = (props) => {
   const LetterGrade = () => {
     let color;
@@ -125,7 +127,7 @@ const Grade = (props) => {
   return <Pressable 
     onPress={() => {props.nav.navigate('ClassView', props.info)}} 
     style={[styles.courseSection, GlobalStyles.section]}
->
+	>
 	<SkeletonContent
 		isLoading={props.loading}
 		// containerStyle={{

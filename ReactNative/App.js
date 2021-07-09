@@ -20,13 +20,31 @@ import Login from './Pages/Login';
 
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import GlobalStyles from './GlobalStyles';
+import api from './api';
 
 export default function App() {
   const Tabs = createBottomTabNavigator();
+  const [loggedIn, setLoggedIn] = React.useState(false)
+
+  const login = (domain, name, pass) => {
+    api.login(domain, name, pass)
+    setLoggedIn(true)
+  }
+
+
+  //fucking hate this. works for now for basic testing without breaking everything
+  const Test = () => {
+    return <Login login={login} />
+  }
+  React.useEffect(() => {setLoggedIn(false)}, [])
 
   return  <NavigationContainer >
     <StatusBar barStyle='light-content'></StatusBar>
     <View style={[{height: 22, backgroundColor: '#282c34',}, GlobalStyles.section]}></View>
+
+
+
+    {!loggedIn ? <Login login={login}/> :
     <Tabs.Navigator 
       tabBarOptions={{
         style: {
@@ -35,7 +53,7 @@ export default function App() {
       }}
     >
       
-      <Tabs.Screen name='Login' component={Login} 
+      <Tabs.Screen name='Login' component={Test} 
         //https://reactnavigation.org/docs/headers
       />
       
@@ -72,6 +90,7 @@ export default function App() {
       />
 
     </Tabs.Navigator>
+}
   </NavigationContainer>
 
 }

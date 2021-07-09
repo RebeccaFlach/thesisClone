@@ -9,26 +9,40 @@ import config from '../config';
 
 import api from '../api'
 
-const Login = ({navigation}) => {
+const Login = (props) => {
+    const [domain, setDomain] = React.useState<string>();
     const [name, setName] = React.useState<string>();
     const [pass, setPass] = React.useState<string>();
+	const [log, setLog] = React.useState(false);
 
-    const login = () => {
-      api.login('1301246779', '3.1415fuckyou')
-    }
+
     return (<View style={GlobalStyles.container}>
         
         <View style={styles.login} >
+            <Text>Username:</Text>
+			
             <TextInput 
                 onChangeText={setName} 
                 style={styles.input}
+				autoCompleteType='username'
+				textContentType='username'
             />
+
+			<Text>Password: </Text>
+			<TextInput 
+            	onChangeText={setPass} 
+              	style={styles.input}
+				autoCompleteType='password'
+				textContentType='password'
+            />
+
+			<Text>Domain: (ie student.tusd1)</Text>
             <TextInput 
-                onChangeText={setPass} 
+                onChangeText={setDomain} 
                 style={styles.input}
             />
 
-            <Button onPress={login} title='login' />
+            <Button onPress={() => {props.login(domain, name, pass)} }title='login' />
         </View>
     </View>
   );
@@ -43,7 +57,7 @@ const styles = StyleSheet.create({
     login: {
         display: 'flex',
         alignItems: 'center',
-        justifyContent: 'center',
+        // justifyContent: 'center',
         height: '100%',
     }
   });

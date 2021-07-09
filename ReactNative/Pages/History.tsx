@@ -40,7 +40,7 @@ const Main = ({navigation}) => {
 
     const Header = () => {
         return <View style={[styles.header, GlobalStyles.section]}>
-
+            
             <Text style={[{fontSize: 35}, GlobalStyles.text]}>GPA</Text>
             <Text style={[GlobalStyles.secondaryText, {fontSize: 20}]}>
                 Weighted: {weighted}
@@ -48,10 +48,14 @@ const Main = ({navigation}) => {
             <Text style={[GlobalStyles.secondaryText, {fontSize: 20}]}>
                 Unweighted: {unweighted}
             </Text>
-
             <Pressable onPress={() => {navigation.navigate('ReportCards')}}>
-                <Text>Report Cards</Text> 
+                <View style={{marginTop: 10, borderColor: '#666666', borderWidth: 1, padding: 10}}>
+                    <Text style={[GlobalStyles.secondaryText, {fontSize: 25}]}>
+                        View Report Cards
+                    </Text> 
+                </View>
             </Pressable>
+            
         </View>
     }
 
@@ -77,16 +81,16 @@ const Main = ({navigation}) => {
             isLoading={loading}
             layout={skeletons}
         >
-        <FlatList
-            data={history}
-            renderItem={({item}) => <Year name={item.Grade} terms={item.Terms} />}
-            keyExtractor={(year) => year.Grade}
+            <FlatList
+                data={history}
+                renderItem={({item}) => <Year name={item.Grade} terms={item.Terms} />}
+                keyExtractor={(year) => year.Grade}
 
-            refreshing={refreshing}
-            onRefresh={onRefresh}
+                refreshing={refreshing}
+                onRefresh={onRefresh}
 
-            ListHeaderComponent={Header}
-        />
+                ListHeaderComponent={Header}
+            />
         </SkeletonContent>
     </View>
 }
@@ -95,7 +99,9 @@ const History = () => {
     const Stack = createStackNavigator();
 
 	return <Stack.Navigator headerMode={'none'}>
-		<Stack.Screen component={Main} name='Main' />
+		<Stack.Screen component={Main} name='Main' options={{
+            headerShown: false
+        }} />
 		<Stack.Screen component={ReportCards} name={'ReportCards'}/>
         <Stack.Screen component={DocView} name={'DocView'}/>
 	</Stack.Navigator>
@@ -145,6 +151,11 @@ interface Document {
     DocumentType: string,
     StudentGU: string, 
 }
+
+const ReportCard = () => {
+    
+}
+
 const ReportCards = ({navigation}) => {
     const [docs, setDocs] = React.useState<Document[]>();
 
@@ -153,24 +164,29 @@ const ReportCards = ({navigation}) => {
     return <View style={GlobalStyles.container}>
         <FlatList 
             data={docs}
-            renderItem={({item}) => <Pressable onPress={() => {
+            renderItem={({item}) => <View
+            style={[{
+                // height: 50,
+                flex: 1, 
+                alignItems: 'center',
+                flexDirection: 'row',
+                padding: 10,
+                paddingLeft: 20
+            }, GlobalStyles.section]}
+            ><Pressable onPress={() => {
                     api.getDoc(item.DocumentGU).then((doc) => {
                         navigation.navigate('DocView', doc.Base64Code._text)
                     }
                 )}  
             }
-            style={[{
-                height: 50,
-                flex: 1, 
-                alignItems: 'center',
-                flexDirection: 'row',
-                padding: 10
-            }, GlobalStyles.section]}
+            style={{padding: 10}}
             >
-                <Text style={[GlobalStyles.secondaryText, {fontSize: 20}]}>
+                <Text style={[GlobalStyles.secondaryText, {fontSize: 20, flex: 1}]} numberOfLines={1}>
                     {item.DocumentComment}
                 </Text>
-            </Pressable>}
+            </Pressable>
+            </View>
+            }
             keyExtractor={(doc) => doc.DocumentGU}
         
         />
@@ -212,7 +228,7 @@ const styles = StyleSheet.create({
     header: {
         padding: 20, 
         marginBottom: 20, 
-        height: 150
+        // height: 150
     },
     skeletonBlock: {
         alignItems: 'center',

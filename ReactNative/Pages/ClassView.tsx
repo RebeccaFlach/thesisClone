@@ -15,29 +15,29 @@ const ClassView = ({route, navigation}) => {
 
     // console.log(courseInfo.assignments)
     const ClassDetails = () => {
-        return <Text style={[GlobalStyles.text, {marginBottom: 40}]}>
+        return <Text style={[GlobalStyles.text, {marginBottom: 40, padding: 20}]}>
             <Text style={{fontSize: 30}}>{courseInfo.title}</Text>
             {'\n'}
-            <Text style={{fontSize: 20}}>{courseInfo.teacher}</Text>
+            <Text style={{fontSize: 20, color: '#d0d0d0'}}>{courseInfo.teacher}</Text>
 
             {'\n'}
-            <Text style={{fontSize: 20}}>Room: {courseInfo.room}</Text>
+            <Text style={{fontSize: 20, color: '#d0d0d0'}}>Room: {courseInfo.room}</Text>
 
         </Text>
     }
+//should do sort by most points
 
 
 
 
-
-    return <View style={[GlobalStyles.container, {padding: 20}]}>
-    
-        <ClassDetails />
+    return <View style={[GlobalStyles.container ]}>
 
         <FlatList
             data={courseInfo.assignments}
             renderItem={({item}) => <Assignment assignment={item._attributes} />}
             keyExtractor={(item) => item._attributes.GradebookID}
+            // style={{padding: 20}}
+            ListHeaderComponent={ClassDetails}
         />
     </View>
 }
@@ -48,12 +48,30 @@ const Assignment = (props: {assignment: AssignmentEntity}) => {
     console.log(props.assignment)
     const points = props.assignment.Points.split(' / ')
 
-    const pointsEarned = parseFloat(points[0]).toFixed(2);
-    const pointsPossible = parseFloat(points[1]).toFixed(2)
+    const pointsEarned = parseFloat(points[0]);
+    const pointsPossible = parseFloat(points[1]);
 
-    return <View style={[GlobalStyles.section, styles.assignment, {minHeight: 50}]}>
-        <Text style={[GlobalStyles.text, {fontSize: 20, flex: 1}]} numberOfLines={1}>{props.assignment.Measure}</Text>
-        <Text style={[GlobalStyles.text]} >{pointsEarned} / {pointsPossible} </Text>
+    let score = ((pointsEarned / pointsPossible) * 100).toFixed(1);
+    if (pointsPossible === 0 && pointsEarned > 0)
+        score = 'EC'
+    else if(score == 'NaN')
+        score = 'N/A';
+    else
+        score += '%'
+
+
+    return <View style={[GlobalStyles.section, styles.assignment]}>
+        {/* <Text style={[GlobalStyles.text, {flex: 1}]}> */}
+        
+        <Text style={[{fontSize: 15, flex: 1,}, GlobalStyles.text]} numberOfLines={2}>
+            {props.assignment.Measure} 
+        </Text>
+        <Text style={[GlobalStyles.text, {fontSize: 20}]} >
+            {score}
+        </Text>
+        <Text style={[ {width: '100%', color: '#d0d0d0'}]}>
+            {pointsEarned.toFixed(2)} / {pointsPossible.toFixed(2)}
+        </Text>
     </View>
 }
 
@@ -62,7 +80,10 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'space-between',
         flexDirection: 'row',
-        alignItems: 'center'
+        alignItems: 'center',
+        minHeight: 60,
+        flexWrap: 'wrap',
+        padding: 15,
         
 
     }
