@@ -64,9 +64,9 @@ export default function App() {
       }}
     >
       
-      <Tabs.Screen name='Login' component={Test} 
+      {/* <Tabs.Screen name='Login' component={Test} 
         //https://reactnavigation.org/docs/headers
-      />
+      /> */}
       
       <Tabs.Screen name='Messages' component={Messages}
         options={{

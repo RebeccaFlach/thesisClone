@@ -12,8 +12,6 @@ import {AssignmentEntity} from '../../backend/src/model/GradeBook'
 const ClassView = ({route, navigation}) => {
     const courseInfo = route.params;
 
-
-    // console.log(courseInfo.assignments)
     const ClassDetails = () => {
         return <Text style={[GlobalStyles.text, {marginBottom: 40, padding: 20}]}>
             <Text style={{fontSize: 30}}>{courseInfo.title}</Text>
@@ -31,12 +29,10 @@ const ClassView = ({route, navigation}) => {
 
 
     return <View style={[GlobalStyles.container ]}>
-
         <FlatList
             data={courseInfo.assignments}
             renderItem={({item}) => <Assignment assignment={item._attributes} />}
             keyExtractor={(item) => item._attributes.GradebookID}
-            // style={{padding: 20}}
             ListHeaderComponent={ClassDetails}
         />
     </View>
@@ -45,19 +41,27 @@ const ClassView = ({route, navigation}) => {
 
 const Assignment = (props: {assignment: AssignmentEntity}) => {
 
-    console.log(props.assignment)
     const points = props.assignment.Points.split(' / ')
 
     const pointsEarned = parseFloat(points[0]);
     const pointsPossible = parseFloat(points[1]);
 
-    let score = ((pointsEarned / pointsPossible) * 100).toFixed(1);
+    //parsing removes trailing 0s
+    let writtenScore = parseFloat(pointsEarned.toFixed(1)) + ' / ' + parseFloat(pointsPossible.toFixed(1));
+    if (isNaN(pointsEarned) || isNaN(pointsPossible))
+        writtenScore = props.assignment.Points
+
+    let score = parseFloat(((pointsEarned / pointsPossible) * 100).toFixed(1)) as any;
     if (pointsPossible === 0 && pointsEarned > 0)
         score = 'EC'
-    else if(score == 'NaN')
+    else if(isNaN(score))
         score = 'N/A';
     else
-        score += '%'
+        score += '%';
+
+    
+
+    
 
 
     return <View style={[GlobalStyles.section, styles.assignment]}>
@@ -70,7 +74,7 @@ const Assignment = (props: {assignment: AssignmentEntity}) => {
             {score}
         </Text>
         <Text style={[ {width: '100%', color: '#d0d0d0'}]}>
-            {pointsEarned.toFixed(2)} / {pointsPossible.toFixed(2)}
+            {writtenScore}
         </Text>
     </View>
 }

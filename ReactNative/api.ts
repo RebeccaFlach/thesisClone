@@ -28,14 +28,13 @@ const Api = {
         });
         paramStr += '&lt;/Parms&gt;';
 
-
-        return axios.post(`https://${this.domain}/Service/PXPCommunication.asmx`,
+        return axios.post(`https://student.tusd1.org/Service/PXPCommunication.asmx`,
             `<?xml version="1.0" encoding="utf-8"?>\n
             <soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
                 <soap:Body>
                     <ProcessWebServiceRequest xmlns="http://edupoint.com/webservices/">
-                        <userID>${this.user}</userID>
-                        <password>${this.pass}</password>
+                        <userID>1301246779</userID>
+                        <password>3.1415fuckyou</password>
                         <skipLoginLog>1</skipLoginLog>
                         <parent>0</parent>
                         <webServiceHandleName>PXPWebServices</webServiceHandleName>
@@ -56,12 +55,15 @@ const Api = {
     parseData(promise) {
         return promise.then((res) =>  {
 
+            console.log(res)
             const response = convert.xml2js(res.data, {compact: true});
 
             const data = convert.xml2js(response['soap:Envelope']['soap:Body'].ProcessWebServiceRequestResponse.ProcessWebServiceRequestResult._text
                 , {compact: true}
             )
 
+            console.log('output')
+            console.log(data)
             return data;
         })
 
@@ -122,7 +124,7 @@ const Api = {
 
         const token = await this.getAuthToken()
             
-        const res = await axios.get(`https://${this.domain}.org/PXP2_CourseHistory.aspx?token=' + token + '&AGU=0`)
+        const res = await axios.get(`https://${this.domain}/PXP2_CourseHistory.aspx?token=' + token + '&AGU=0`)
         const data = res.data
 
         const find = (start, end, startAt?) => {
