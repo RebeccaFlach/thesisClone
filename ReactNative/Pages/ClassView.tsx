@@ -6,22 +6,84 @@ import { StyleSheet, Text, View, Button, TextInput, FlatList, Pressable } from '
 import GlobalStyles from '../GlobalStyles';
 import config from '../config';
 import { NavigationContainer } from '@react-navigation/native';
+import api from '../api';
 
 import {AssignmentEntity} from '../../backend/src/model/GradeBook'
 
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+
+import { NamesContext } from '../Homepage';
+
 const ClassView = ({route, navigation}) => {
     const courseInfo = route.params;
+    const [names, saveName] = React.useContext(NamesContext);
+    
 
     const ClassDetails = () => {
-        return <Text style={[GlobalStyles.text, {marginBottom: 40, padding: 20}]}>
-            <Text style={{fontSize: 30}}>{courseInfo.title}</Text>
-            {'\n'}
-            <Text style={{fontSize: 20, color: '#d0d0d0'}}>{courseInfo.teacher}</Text>
+        const [newName, setNewName] = React.useState<string>('');
+        const [editing, setEditing] = React.useState<boolean>(false);
 
-            {'\n'}
-            <Text style={{fontSize: 20, color: '#d0d0d0'}}>Room: {courseInfo.room}</Text>
 
-        </Text>
+        const saveNewName = () => {
+            console.log('saving')
+            saveName(courseInfo.title, newName)
+            setEditing(false)
+            // api.setName(courseInfo.title, newName)
+            // setNames('testing');
+        }
+
+        // console.log(names);
+        const nickname = names[courseInfo.title]
+        const title = nickname || courseInfo.title;
+        const secondaryName = nickname ? courseInfo.title : '';
+
+        const renderName = () => {
+            return <>
+                <Text style={[GlobalStyles.text, {fontSize: 30}]}>
+                    {title}
+                </Text>
+                <Icon 
+                    name='pencil' 
+                    size={30} 
+                    onPress={() => {setEditing(true)}} 
+                    color='rgb(10, 132, 255)'
+                />
+            </>
+        }
+
+        const editingName = <>
+            <TextInput 
+                style={[GlobalStyles.text, styles.input]} 
+                onChangeText={setNewName} 
+                autoFocus
+                onSubmitEditing={saveNewName}
+                placeholder='New name'
+                placeholderTextColor={GlobalStyles.secondaryText.color}
+                returnKeyType='done'
+                onBlur={() => {setEditing(false)}}
+            />
+        	{/* <Button title='save' onPress={saveNewName}/> */}
+        </>
+
+        return <View style={[{marginBottom: 40, padding: 20}]}>
+                
+            <View style={[ {flex: 1, justifyContent: 'space-between', flexDirection: 'row'}]}>
+                {editing? editingName : renderName()}
+            </View>
+
+            <Text style={[GlobalStyles.secondaryText, {fontSize: 15}]}>
+                {secondaryName}
+            </Text>
+
+            <Text style={[GlobalStyles.secondaryText, {fontSize: 20}]}>
+                {courseInfo.teacher}
+            </Text>
+
+
+            <Text style={[GlobalStyles.secondaryText, {fontSize: 20}]}>
+                Room: {courseInfo.room}
+            </Text>
+        </View>
     }
 //should do sort by most points
 
@@ -90,6 +152,12 @@ const styles = StyleSheet.create({
         padding: 15,
         
 
+    },
+    input: {
+        width: 200, 
+        height: 40, 
+        borderBottomColor: 'white', 
+        borderBottomWidth: 1
     }
 
 

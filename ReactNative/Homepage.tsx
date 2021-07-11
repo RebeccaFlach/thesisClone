@@ -5,6 +5,7 @@ import { StyleSheet, Text, View, Button, TextInput, FlatList, Pressable } from '
 import { slide as Menu } from 'react-burger-menu';
 
 import { createStackNavigator } from '@react-navigation/stack';
+import AsyncStorage, { useAsyncStorage } from '@react-native-async-storage/async-storage';
 
 import GlobalStyles from './GlobalStyles';
 import config from './config';
@@ -17,6 +18,9 @@ import ClassView from './Pages/ClassView'
 import api from './api'
 import SkeletonContent from 'react-native-skeleton-content';
 
+import _ from 'underscore'
+
+
 interface Grade {
   title: string,
   grade: string,
@@ -25,36 +29,52 @@ interface Grade {
   teacher: string, 
   room: string,
 }
+const NamesContext = React.createContext([])
 
 const Homepage = ({ navigation }) => {
-  
+	const Stack = createStackNavigator()
+	const [names, setNames] = React.useState<any>({});
 
-  const Stack = createStackNavigator()
- 
-  const parentNav = navigation;
 
-  
+	React.useEffect(() => {	
+		api.getNames().then((data) => {
+			setNames(data)
+		}
+	)}, []);
 
-	return <Stack.Navigator headerMode={'none'}>
-		<Stack.Screen component={Main} name="Main" />
-		<Stack.Screen component={ClassView} name={'ClassView'}/>
-	</Stack.Navigator>
+	const saveName = (officialName, newName) => {
+		const newNames = _(names).clone()
+		_(newNames).extend({[officialName]: newName})
+
+		setNames(newNames)
+		AsyncStorage.setItem('classNicknames', JSON.stringify(newNames))
+	}
+
+	return <NamesContext.Provider value={[names, saveName]}>
+		<Stack.Navigator headerMode={'none'}>
+			<Stack.Screen component={Main} name="Main" />
+			<Stack.Screen component={ClassView} name={'ClassView'}/>
+		</Stack.Navigator>
+	</NamesContext.Provider>
 
 }
 
 const Main = ({ navigation }) => {
 
-	const [loading, setLoading] = React.useState(true)
+	const [loading, setLoading] = React.useState(true);
     const [refreshing, setRefreshing] = React.useState(false);
+
     const [grades, setGrades] = React.useState<Grade[]>();
 
-    React.useEffect(() => {api.getGrades().then((data) => {
-		setLoading(false)
-		setGrades(data)
+    React.useEffect(() => {	
+		api.getGrades().then((data) => {
+			setLoading(false)
+			setGrades(data)
 		}
 	)}, []);
 
 	const onRefresh = React.useCallback(() => {
+		api.storeData('Hello World!')
 		setRefreshing(true);
 		api.getGrades().then((data) => {
 			setGrades(data);
@@ -69,6 +89,7 @@ const Main = ({ navigation }) => {
 			{key: 'numberGrade', height: 30, width: 40}
 		]
 	}
+
 
     return <View style={GlobalStyles.container}>
         {/* <Header /> */}
@@ -85,13 +106,12 @@ const Main = ({ navigation }) => {
 					nav={navigation}
 					info={item}
 					key={item.title}
-					loading={loading}
 				/>
 			}
 
 				keyExtractor={(course) => course.title}
 				style={styles.gradeList}
-
+				
 				refreshing={refreshing}
 				onRefresh={onRefresh}
 			/>
@@ -103,59 +123,55 @@ const Main = ({ navigation }) => {
 	  //Es instead of F's fucking hell why
 
 const Grade = (props) => {
-  const LetterGrade = () => {
-    let color;
-    switch(props.info.letterGrade){
-      case 'A': 
-        color = '#63ff00';
-        break;
-      case 'B':
-        color = '#d6ff00';
-        break;
-      case 'C': 
-        color = '#ffff00';
-        break;
-      case 'D':
-        color = '#ffc100';
-        break;
-      default: 
-        color = '#ff0000';
-    }
-    return <Text style = {{fontSize: 40, color: color}}>{props.info.letterGrade}</Text>
-  }
-  
-  return <Pressable 
-    onPress={() => {props.nav.navigate('ClassView', props.info)}} 
-    style={[styles.courseSection, GlobalStyles.section]}
-	>
-	<SkeletonContent
-		isLoading={props.loading}
-		// containerStyle={{
-		// 	width: '100%', 
-		// 	flex: 1, 
-		// 	flexDirection:'row', 
-		// 	alignItems: 'center'}}
-		containerStyle={styles.courseSection}
-		boneColor="#121212"
-        highlightColor="#333333"
-        // animationType="pulse"
-		layout={[
-			{key: 'letterGrade', width: 40, height: 40},
-			{key: 'title', height: 20, width: '60%'},
-			{key: 'numberGrade', height: 30, width: 40}
-		]}
 
+	const LetterGrade = () => {
+		let color;
+		switch(props.info.letterGrade){
+			case 'A': 
+			color = '#63ff00';
+			break;
+			case 'B':
+			color = '#d6ff00';
+			break;
+			case 'C': 
+			color = '#ffff00';
+			break;
+			case 'D':
+			color = '#ffc100';
+			break;
+			default: 
+			color = '#ff0000';
+		}
+    return <Text style = {{fontSize: 40, color: color}}>
+		{props.info.letterGrade}
+	</Text>
+	}
+  	const [names, saveName] = React.useContext(NamesContext)
+	const nickname = names[props.info.title]
+
+	return <View>
+	<Pressable 
+		onPress={() => {props.nav.navigate('ClassView', {...props.info, nickName: props.nickName})}} 
+		style={[styles.courseSection, GlobalStyles.section]}
 	>
-		<LetterGrade />
-		<Text style={[GlobalStyles.text, {fontSize: 20, marginLeft: 20, marginRight: 20, flex: 1} ]} 
-		numberOfLines={1}
-		>
-		{props.info.title} 
-		</Text> 
-		<Text style={[GlobalStyles.text, {fontSize: 30}]} >{ props.info.grade } </Text>
 	
-	</SkeletonContent>
-</Pressable>
+		<LetterGrade />
+		<Text 
+			style={[GlobalStyles.text, {fontSize: 20, marginLeft: 20, marginRight: 20, flex: 1,} ]} 
+			numberOfLines={1}
+		>
+			{nickname|| props.info.title} 
+			
+		</Text> 
+
+		<Text style={[GlobalStyles.text, {fontSize: 30}]} >{ props.info.grade } </Text>
+
+
+	</Pressable>
+{/* 
+	<TextInput style={{width: 100, height: 40, borderColor: 'white', borderWidth: 2}} onChangeText={setNewName}></TextInput>
+  	<Button title='save' onPress={saveNewName}/> */}
+</View>
 }
 
 const Header = () => {
@@ -193,3 +209,4 @@ const styles = StyleSheet.create({
 });
 
 export default Homepage;
+export {NamesContext}

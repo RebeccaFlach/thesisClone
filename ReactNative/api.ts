@@ -4,6 +4,10 @@ import convert from 'xml-js';
 
 import React from "react";
 
+import _ from 'underscore'
+
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 const Api = {
     loggedIn: false,
     user: '',
@@ -55,7 +59,7 @@ const Api = {
     parseData(promise) {
         return promise.then((res) =>  {
 
-            console.log(res)
+            // console.log(res)
             const response = convert.xml2js(res.data, {compact: true});
 
             const data = convert.xml2js(response['soap:Envelope']['soap:Body'].ProcessWebServiceRequestResponse.ProcessWebServiceRequestResult._text
@@ -63,7 +67,7 @@ const Api = {
             )
 
             console.log('output')
-            console.log(data)
+            // console.log(data)
             return data;
         })
 
@@ -167,7 +171,52 @@ const Api = {
             return Promise.resolve(null)
 
         this.parseData(this.request('GetReportCardInitialData'))
-    }
+    },
+
+    async storeData(value) {
+        try {
+          await AsyncStorage.setItem('testing', value)
+        } catch (e) {
+          console.log('error')
+          console.log(e)
+        }
+    },
+    async getData() {
+        try {
+          const val = await AsyncStorage.getItem('testing')
+          return val
+        } catch(e) {
+          // error reading value
+        }
+    },
+
+    async getNames() {
+        try {
+            const names = await AsyncStorage.getItem('classNicknames')
+            return JSON.parse(names)
+        } catch(e) {
+            console.log(e)
+        }
+    },
+
+    async setName(officialName, newName) {
+        const names = await this.getNames() || {};
+        _(names).extend({[officialName]: newName})
+
+        // console.log(names)
+        try {
+            return await AsyncStorage.setItem('classNicknames', JSON.stringify(names))
+        }
+        catch(e) {
+            console.log(e)
+        }
+    },
+
+    useNames(){
+        const [names, setNames] = React.useState(null);
+
+        return [names, setNames];
+    },
 
 }
 
