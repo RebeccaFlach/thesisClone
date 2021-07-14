@@ -1,7 +1,7 @@
 import React from 'react';
 import axios from 'axios';
 
-import { StyleSheet, Text, View, Button, TextInput, FlatList, Pressable } from 'react-native';
+import { StyleSheet, Text, View, Button, TextInput, FlatList, Pressable, SafeAreaView } from 'react-native';
 import { slide as Menu } from 'react-burger-menu';
 
 import { createStackNavigator } from '@react-navigation/stack';
@@ -37,8 +37,9 @@ const Homepage = ({ navigation }) => {
 
 
 	React.useEffect(() => {	
+
 		api.getNames().then((data) => {
-			setNames(data)
+			setNames(data || {})
 		}
 	)}, []);
 
@@ -67,6 +68,7 @@ const Main = ({ navigation }) => {
     const [grades, setGrades] = React.useState<Grade[]>();
 
     React.useEffect(() => {	
+		api.loginTest()
 		api.getGrades().then((data) => {
 			setLoading(false)
 			setGrades(data)
@@ -74,7 +76,6 @@ const Main = ({ navigation }) => {
 	)}, []);
 
 	const onRefresh = React.useCallback(() => {
-		api.storeData('Hello World!')
 		setRefreshing(true);
 		api.getGrades().then((data) => {
 			setGrades(data);
@@ -91,7 +92,7 @@ const Main = ({ navigation }) => {
 	}
 
 
-    return <View style={GlobalStyles.container}>
+    return <SafeAreaView style={GlobalStyles.container}>
         {/* <Header /> */}
 		<SkeletonContent
 			isLoading={loading}
@@ -117,7 +118,7 @@ const Main = ({ navigation }) => {
 			/>
 		</SkeletonContent>
 
-    </View>
+    </SafeAreaView>
   	}
 
 	  //Es instead of F's fucking hell why

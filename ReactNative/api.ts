@@ -7,6 +7,7 @@ import React from "react";
 import _ from 'underscore'
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as SecureStore from 'expo-secure-store';
 
 const Api = {
     loggedIn: false,
@@ -22,7 +23,23 @@ const Api = {
 
     },
 
-    request (method:string, params={}) {
+    async loginTest() {
+        this.domain = await AsyncStorage.getItem('domain');
+        this.pass = await SecureStore.getItemAsync('password');
+        this.user = await SecureStore.getItemAsync('username');
+
+        console.log('logging in')
+
+        return this.pass;
+    },
+
+    async request(method:string, params={}, domain?) {
+        if (!this.pass)
+            await this.loginTest()
+        console.log('INFO')
+        console.log(this.domain)
+        console.log(this.user)
+        console.log(this.pass)
 
         let paramStr = '&lt;Parms&gt;';
         Object.entries(params).forEach(([key, value]) => {
@@ -32,13 +49,13 @@ const Api = {
         });
         paramStr += '&lt;/Parms&gt;';
 
-        return axios.post(`https://student.tusd1.org/Service/PXPCommunication.asmx`,
+        return axios.post(`${this.domain}/Service/PXPCommunication.asmx`,
             `<?xml version="1.0" encoding="utf-8"?>\n
             <soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
                 <soap:Body>
                     <ProcessWebServiceRequest xmlns="http://edupoint.com/webservices/">
-                        <userID>1301246779</userID>
-                        <password>3.1415fuckyou</password>
+                        <userID>${this.user}</userID>
+                        <password>${this.pass}</password>
                         <skipLoginLog>1</skipLoginLog>
                         <parent>0</parent>
                         <webServiceHandleName>PXPWebServices</webServiceHandleName>
@@ -75,16 +92,12 @@ const Api = {
         
     },
 
-    getMessages():Promise<any> {
-        if (!this.loggedIn)
-            return Promise.resolve(null)
+    async getMessages():Promise<any> {
         return this.parseData(this.request('GetPXPMessages'))
             .then((messageData) => messageData.PXPMessagesData.MessageListings.MessageListing)
     },
 
     getGrades() {
-        if (!this.loggedIn)
-            return Promise.resolve(null)
 
         return this.parseData(this.request('Gradebook'))
             .then((gradebook) => {
@@ -123,12 +136,9 @@ const Api = {
     },
 
     async getHistory() {
-        if (!this.loggedIn)
-            return Promise.resolve(null)
-
         const token = await this.getAuthToken()
             
-        const res = await axios.get(`https://${this.domain}/PXP2_CourseHistory.aspx?token=' + token + '&AGU=0`)
+        const res = await axios.get(`${this.domain}/PXP2_CourseHistory.aspx?token=${token}&AGU=0`)
         const data = res.data
 
         const find = (start, end, startAt?) => {
@@ -151,31 +161,22 @@ const Api = {
     },
 
     getDocuments() {
-        if (!this.loggedIn)
-            return Promise.resolve(null)
-
         return this.parseData(this.request('GetStudentDocumentInitialData'))
         .then((data) => (data.StudentDocuments.StudentDocumentDatas.StudentDocumentData).map(doc => doc._attributes))
     },
 
     getDoc(guid) {
-        if (!this.loggedIn)
-            return Promise.resolve(null)
-
         return this.parseData(this.request('GetContentOfAttachedDoc', { DocumentGU: guid }))
             .then(data => data.StudentAttachedDocumentData.DocumentDatas.DocumentData)
     },
 
     getReportCards() {
-        if (!this.loggedIn)
-            return Promise.resolve(null)
-
         this.parseData(this.request('GetReportCardInitialData'))
     },
 
-    async storeData(value) {
+    async storeData(key, value) {
         try {
-          await AsyncStorage.setItem('testing', value)
+          await AsyncStorage.setItem(key, value)
         } catch (e) {
           console.log('error')
           console.log(e)
@@ -212,11 +213,34 @@ const Api = {
         }
     },
 
-    useNames(){
-        const [names, setNames] = React.useState(null);
+    getDistricts(zip) {
+        const zipLookupKey = '5E4B7859-B805-474B-A833-FDB15D205D40' //got this from somewhere that said "idk how safe this is" so yeah
 
-        return [names, setNames];
-    },
+        const getter = axios.post('https://support.edupoint.com/Service/HDInfoCommunication.asmx',
+        `<?xml version="1.0" encoding="utf-8"?>\n
+            <soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+                <soap:Body>
+                    <ProcessWebServiceRequest xmlns="http://edupoint.com/webservices/">
+                        <webServiceHandleName>HDInfoServices</webServiceHandleName>
+                        <methodName>GetMatchingDistrictList</methodName>
+                        <paramStr>
+                            &lt;Parms&gt;&lt;Key&gt;${zipLookupKey}&lt;/Key&gt;&lt;MatchToDistrictZipCode&gt;${zip}&lt;/MatchToDistrictZipCode&gt;&lt;/Parms&gt;
+                        </paramStr>
+                    </ProcessWebServiceRequest>
+                </soap:Body>
+            </soap:Envelope>`,
+        {headers:{
+            'Content-Type': 'text/xml; charset=utf-8',
+           
+            }
+        }, 
+        )
+
+        return this.parseData(getter).then((data) =>  data.DistrictLists.DistrictInfos.DistrictInfo.map(district => district._attributes) )
+        
+    }
+
+
 
 }
 

@@ -1,6 +1,6 @@
 import React from 'react';
 import axios from 'axios';
-import { StyleSheet, Text, View, Button, TextInput, FlatList, Pressable, ScrollView, RefreshControl, ListView } from 'react-native';
+import { StyleSheet, Text, View, Button, TextInput, FlatList, Pressable, ScrollView, RefreshControl, ListView, SafeAreaView } from 'react-native';
 import config from '../config';
 import GlobalStyles from '../GlobalStyles';
 
@@ -32,7 +32,10 @@ const Main = ({navigation}) => {
     const [refreshing, setRefreshing] = React.useState(false);
     const [loading, setLoading] = React.useState<boolean>(true)
 
+    console.log('rendering')
+
     React.useEffect(() => {api.getMessages().then((data) => {
+        console.log('this runnign')
         setMessages(data);
         setLoading(false);
     })}, []);
@@ -62,7 +65,7 @@ const Main = ({navigation}) => {
       ]
     }
 
-    return <View  style={GlobalStyles.container}>
+    return <SafeAreaView  style={GlobalStyles.container}>
         <SkeletonContent 
             layout={Array(4).fill(messageSkeleton)}
             isLoading={loading}
@@ -78,17 +81,9 @@ const Main = ({navigation}) => {
             />
         </SkeletonContent>
 
-    </View>
+    </SafeAreaView>
 }
 
-
-
-interface Props {
-    subject: string,
-    content: string,
-    from: string,
-    date: string
-}
 
 const Message = (props) => {
     let preview = textVersion(props.content)
@@ -137,14 +132,14 @@ const FullMessage = ({route, navigation}) => {
         
     `;
 
-    return <View style={GlobalStyles.container}>
+    return <SafeAreaView style={GlobalStyles.container}>
         <WebView
             style={GlobalStyles.container}
             containerStyle={{backgroundColor: '#282c34', color:'#f0f0f0'}}
             originWhitelist={['*']}
             source={{ html:  style + route.params.content}}
         />
-    </View>
+    </SafeAreaView>
 }
 
 const styles = StyleSheet.create({

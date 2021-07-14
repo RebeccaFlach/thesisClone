@@ -1,7 +1,7 @@
 import React from 'react';
 import axios from 'axios';
 
-import { StyleSheet, Text, View, Button, TextInput, FlatList, Pressable } from 'react-native';
+import { StyleSheet, Text, View, Button, TextInput, FlatList, Pressable, SafeAreaView } from 'react-native';
 
 import GlobalStyles from '../GlobalStyles';
 import config from '../config';
@@ -33,7 +33,7 @@ const ClassView = ({route, navigation}) => {
         }
 
         // console.log(names);
-        const nickname = names[courseInfo.title]
+        const nickname = names && names[courseInfo.title]
         const title = nickname || courseInfo.title;
         const secondaryName = nickname ? courseInfo.title : '';
 
@@ -90,14 +90,14 @@ const ClassView = ({route, navigation}) => {
 
 
 
-    return <View style={[GlobalStyles.container ]}>
+    return <SafeAreaView style={[GlobalStyles.container ]}>
         <FlatList
             data={courseInfo.assignments}
             renderItem={({item}) => <Assignment assignment={item._attributes} />}
             keyExtractor={(item) => item._attributes.GradebookID}
             ListHeaderComponent={ClassDetails}
         />
-    </View>
+    </SafeAreaView>
 }
 
 
@@ -129,7 +129,7 @@ const Assignment = (props: {assignment: AssignmentEntity}) => {
     return <View style={[GlobalStyles.section, styles.assignment]}>
         {/* <Text style={[GlobalStyles.text, {flex: 1}]}> */}
         
-        <Text style={[{fontSize: 15, flex: 1,}, GlobalStyles.text]} numberOfLines={2}>
+        <Text style={[{fontSize: 15, flex: 1, marginRight: 20}, GlobalStyles.text]} numberOfLines={2}>
             {props.assignment.Measure} 
         </Text>
         <Text style={[GlobalStyles.text, {fontSize: 20}]} >

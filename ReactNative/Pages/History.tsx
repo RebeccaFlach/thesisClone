@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, View, FlatList, Pressable } from 'react-native';
+import { StyleSheet, Text, View, FlatList, Pressable, SafeAreaView } from 'react-native';
 
 import GlobalStyles from '../GlobalStyles';
 import api from '../api'
@@ -73,7 +73,7 @@ const Main = ({navigation}) => {
 
     ]
 
-    return <View style={GlobalStyles.container}>
+    return <SafeAreaView style={GlobalStyles.container}>
         <SkeletonContent 
             boneColor="#121212"
 			highlightColor="#333333"
@@ -92,7 +92,7 @@ const Main = ({navigation}) => {
                 ListHeaderComponent={Header}
             />
         </SkeletonContent>
-    </View>
+    </SafeAreaView>
 }
 
 const History = () => {
@@ -161,7 +161,7 @@ const ReportCards = ({navigation}) => {
 
     React.useEffect(() => {api.getDocuments().then(setDocs)},[])
 
-    return <View style={GlobalStyles.container}>
+    return <SafeAreaView style={GlobalStyles.container}>
         <FlatList 
             data={docs}
             renderItem={({item}) => <View
@@ -190,7 +190,7 @@ const ReportCards = ({navigation}) => {
             keyExtractor={(doc) => doc.DocumentGU}
         
         />
-    </View>
+    </SafeAreaView>
 }
 
 const DocView = ({route, navigation}) => {
