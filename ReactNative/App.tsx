@@ -12,7 +12,6 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 //screens
 import Homepage from './Homepage';
 import Messages from './Pages/Messages';
-import Attendance from './Pages/Attendance';
 import History from './Pages/History';
 import {EnterZip, DistrictList} from './Pages/Login';
 
@@ -26,10 +25,9 @@ export default function App() {
   const [loggedIn, setLoggedIn] = React.useState(false)
 
   	React.useEffect(() => {
-		setLoggedIn(false);
-		api.loginTest().then((pass) => {
-			if (pass)
-				setLoggedIn(true)
+		api.login().then((user) => {
+			if (!user)
+				setLoggedIn(false)
 		})
     
   
@@ -38,39 +36,47 @@ export default function App() {
 	const Login = () => {
 		const [name, setName] = React.useState<string>();
 		const [pass, setPass] = React.useState<string>();
+		const [error, setError] = React.useState<string>();
 	
-		const setInfo = () => {
-			const passPromise = SecureStore.setItemAsync('password', pass);
-			const userPromise = SecureStore.setItemAsync('username', name);
+		const setInfo = async () => {
+			const res = await api.checkLogin(name, pass);
+			if (res){
+				console.log('setting err')
+				setError(res);
+			}
+			else {
+				const passPromise = SecureStore.setItemAsync('password', pass);
+				const userPromise = SecureStore.setItemAsync('username', name);
 
-			Promise.all([passPromise, userPromise]).then(() => {
-				api.loginTest().then((test) => {
-					console.log(test)
-					setLoggedIn(true)
-				})
-			})
+				await Promise.all([passPromise, userPromise]);
+				await api.login();
+				console.log('logged in!')
+				setLoggedIn(true);
+			}
+			
 		}
 	
 		return (<SafeAreaView style={GlobalStyles.container}>
 			
 			<KeyboardAvoidingView style={styles.login} >
-					<TextInput 
-						placeholder='Username'
-						placeholderTextColor='#b0b0b0'
-						onChangeText={setName} 
-						style={[styles.input]}
-						autoCompleteType='username'
-						textContentType='username'
-					/>
-				
-					<TextInput 
-						placeholder='Password'
-						placeholderTextColor='#b0b0b0'
-						onChangeText={setPass} 
-						style={[styles.input]}
-						autoCompleteType='password'
-						textContentType='password'
-					/>
+				<Text style={{color: '#c21f13', fontSize: 15}}>{error}</Text>
+				<TextInput 
+					placeholder='Username'
+					placeholderTextColor='#b0b0b0'
+					onChangeText={setName} 
+					style={[styles.input]}
+					autoCompleteType='username'
+					textContentType='username'
+				/>
+			
+				<TextInput 
+					placeholder='Password'
+					placeholderTextColor='#b0b0b0'
+					onChangeText={setPass} 
+					style={[styles.input]}
+					autoCompleteType='password'
+					textContentType='password'
+				/>
 	
 				<Button onPress={setInfo}title='login' />
 			</KeyboardAvoidingView>
@@ -98,7 +104,7 @@ export default function App() {
 	}
 
 
-	return  <NavigationContainer >
+	return <NavigationContainer >
     <StatusBar barStyle='light-content'></StatusBar>
 
 

@@ -10,36 +10,22 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as SecureStore from 'expo-secure-store';
 
 const Api = {
-    loggedIn: false,
     user: '',
     pass: '',
     domain: '',
 
-    login (domain, username, password) {
-        this.domain = domain;
-        this.user = username;
-        this.pass = password;
-        this.loggedIn = true;
-
-    },
-
-    async loginTest() {
+    async login() {
         this.domain = await AsyncStorage.getItem('domain');
         this.pass = await SecureStore.getItemAsync('password');
         this.user = await SecureStore.getItemAsync('username');
 
-        console.log('logging in')
-
-        return this.pass;
+        return this.user;
     },
 
-    async request(method:string, params={}, domain?) {
-        if (!this.pass)
-            await this.loginTest()
-        console.log('INFO')
-        console.log(this.domain)
-        console.log(this.user)
-        console.log(this.pass)
+    async request(method:string, params={}) {
+        if(!this.user)
+            await this.login()
+
 
         let paramStr = '&lt;Parms&gt;';
         Object.entries(params).forEach(([key, value]) => {
@@ -75,26 +61,33 @@ const Api = {
 
     parseData(promise) {
         return promise.then((res) =>  {
-
-            // console.log(res)
             const response = convert.xml2js(res.data, {compact: true});
 
             const data = convert.xml2js(response['soap:Envelope']['soap:Body'].ProcessWebServiceRequestResponse.ProcessWebServiceRequestResult._text
                 , {compact: true}
-            )
+            ) as any;
 
-            console.log('output')
-            // console.log(data)
+            if (data.RT_ERROR)
+                return Promise.reject(data.RT_ERROR._attributes.ERROR_MESSAGE)
+
             return data;
         })
 
-        .catch(console.log)
+        .catch((err) => {
+            console.log('error')
+            console.log(err)
+            return Promise.reject(err)
+        })
         
     },
 
     async getMessages():Promise<any> {
         return this.parseData(this.request('GetPXPMessages'))
-            .then((messageData) => messageData.PXPMessagesData.MessageListings.MessageListing)
+            .then((messageData) => messageData?.PXPMessagesData.MessageListings.MessageListing)
+            .catch(err => {
+                console.log(err)
+                return Promise.reject(err);
+            })
     },
 
     getGrades() {
@@ -120,9 +113,6 @@ const Api = {
     },
 
     getAuthToken() {
-        if (!this.loggedIn)
-            return Promise.resolve(null)
-
         const params = {
             username: this.user,
             TokenForClassWebsite: true,
@@ -200,19 +190,6 @@ const Api = {
         }
     },
 
-    async setName(officialName, newName) {
-        const names = await this.getNames() || {};
-        _(names).extend({[officialName]: newName})
-
-        // console.log(names)
-        try {
-            return await AsyncStorage.setItem('classNicknames', JSON.stringify(names))
-        }
-        catch(e) {
-            console.log(e)
-        }
-    },
-
     getDistricts(zip) {
         const zipLookupKey = '5E4B7859-B805-474B-A833-FDB15D205D40' //got this from somewhere that said "idk how safe this is" so yeah
 
@@ -238,6 +215,17 @@ const Api = {
 
         return this.parseData(getter).then((data) =>  data.DistrictLists.DistrictInfos.DistrictInfo.map(district => district._attributes) )
         
+    },
+
+    async checkLogin(user, pass) {
+        this.domain = await AsyncStorage.getItem('domain');
+        this.user = user;
+        this.pass = pass;
+        
+        return this.parseData(this.request('GetPXPMessages')).then((res) => {
+            return '';
+        })
+        .catch((err) => err)
     }
 
 

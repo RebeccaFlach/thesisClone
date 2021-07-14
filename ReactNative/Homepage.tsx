@@ -18,7 +18,8 @@ import ClassView from './Pages/ClassView'
 import api from './api'
 import SkeletonContent from 'react-native-skeleton-content';
 
-import _ from 'underscore'
+import _ from 'underscore';
+
 
 
 interface Grade {
@@ -68,7 +69,6 @@ const Main = ({ navigation }) => {
     const [grades, setGrades] = React.useState<Grade[]>();
 
     React.useEffect(() => {	
-		api.loginTest()
 		api.getGrades().then((data) => {
 			setLoading(false)
 			setGrades(data)
