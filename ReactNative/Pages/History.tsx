@@ -16,17 +16,19 @@ const Main = ({navigation}) => {
     const [weighted, setWeighted] = React.useState<string>();
 
     const [refreshing, setRefreshing] = React.useState<boolean>(false);
-    const [loading, setLoading] = React.useState<boolean>(true)
+    const [loading, setLoading] = React.useState<boolean>(true);
+    const [error, setError] = React.useState();
 
 
     const onRefresh = React.useCallback(() => {
         setRefreshing(true);
         api.getHistory().then((data) => {
+            // console.log(data)
             setHistory(data.history);
             setUnweighted(data.unweighted)
             setWeighted(data.weighted)
             setRefreshing(false)
-        })
+        }).catch(setError)
     }, []);
 
     React.useEffect(() => {api.getHistory().then((data) => {
@@ -35,7 +37,7 @@ const Main = ({navigation}) => {
         setHistory(data.history);
         setUnweighted(data.unweighted);
         setWeighted(data.weighted);
-    })}, [])
+    }).catch(setError)}, [])
 
 
     const Header = () => {
@@ -43,10 +45,10 @@ const Main = ({navigation}) => {
             
             <Text style={[{fontSize: 35}, GlobalStyles.text]}>GPA</Text>
             <Text style={[GlobalStyles.secondaryText, {fontSize: 20}]}>
-                Weighted: {weighted}
+                Weighted: {weighted?.substring(0,10)}
             </Text>
             <Text style={[GlobalStyles.secondaryText, {fontSize: 20}]}>
-                Unweighted: {unweighted}
+                Unweighted: {unweighted?.substring(0,10)}
             </Text>
             <Pressable onPress={() => {navigation.navigate('ReportCards')}}>
                 <View style={{marginTop: 10, borderColor: '#666666', borderWidth: 1, padding: 10}}>
@@ -74,6 +76,11 @@ const Main = ({navigation}) => {
     ]
 
     return <SafeAreaView style={GlobalStyles.container}>
+        {error && 
+			<Text style={{color: 'red'}}>
+                becca fucked up! screenshot this error and send it to her, please! {'\n'} {JSON.stringify(error)} 
+            </Text>
+		}
         <SkeletonContent 
             boneColor="#121212"
 			highlightColor="#333333"
@@ -158,10 +165,16 @@ const ReportCard = () => {
 
 const ReportCards = ({navigation}) => {
     const [docs, setDocs] = React.useState<Document[]>();
+    const [error, setError] = React.useState();
 
-    React.useEffect(() => {api.getDocuments().then(setDocs)},[])
+    React.useEffect(() => {api.getDocuments().then(setDocs).catch(setError)},[])
 
     return <SafeAreaView style={GlobalStyles.container}>
+        {error && 
+			<Text style={{color: 'red'}}>
+                becca fucked up! screenshot this error and send it to her, please! {'\n'} {error} 
+            </Text>
+		}
         <FlatList 
             data={docs}
             renderItem={({item}) => <View

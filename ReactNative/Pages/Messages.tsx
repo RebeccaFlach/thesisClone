@@ -30,15 +30,18 @@ const Messages = () => {
 const Main = ({navigation}) => {
     const [messages, setMessages] = React.useState<IMessage[]>(null);
     const [refreshing, setRefreshing] = React.useState(false);
-    const [loading, setLoading] = React.useState<boolean>(true)
+    const [loading, setLoading] = React.useState<boolean>(true);
+    const [error, setError] = React.useState();
 
-    console.log('rendering')
+    React.useEffect(() => {
+        api.getMessages()
+            .then((data) => {
+                setMessages(data);
+                setLoading(false);
+            })
+            .catch(setError)
 
-    React.useEffect(() => {api.getMessages().then((data) => {
-        console.log('this runnign')
-        setMessages(data);
-        setLoading(false);
-    })}, []);
+    }, []);
 
     const renderMessage = ({ item }) => {
         return <Message 
@@ -56,6 +59,7 @@ const Main = ({navigation}) => {
             setMessages(data);
             setRefreshing(false)
         })
+        .catch(setError)
     }, []);
 
     const messageSkeleton = {
@@ -66,6 +70,11 @@ const Main = ({navigation}) => {
     }
 
     return <SafeAreaView  style={GlobalStyles.container}>
+        {error && 
+			<Text style={{color: 'red'}}>
+                becca fucked up! screenshot this error and send it to her, please! {'\n'} {error} 
+            </Text>
+		}
         <SkeletonContent 
             layout={Array(4).fill(messageSkeleton)}
             isLoading={loading}
@@ -90,7 +99,7 @@ const Message = (props) => {
     if (preview.length > 75)
         preview = preview.substring(0, 70) + '...';
 
-    preview = preview.replaceAll('&#39;', `'`) //yeah ill do this properly eventually
+    preview = preview.replace(/&#39;/g, `'`) //yeah ill do this properly eventually
  
     return <Pressable 
         onPress={() => {

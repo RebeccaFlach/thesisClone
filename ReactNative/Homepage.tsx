@@ -66,6 +66,7 @@ const Main = ({ navigation }) => {
 	const [loading, setLoading] = React.useState(true);
     const [refreshing, setRefreshing] = React.useState(false);
 
+	const [error, setError] = React.useState();
     const [grades, setGrades] = React.useState<Grade[]>();
 
     React.useEffect(() => {	
@@ -73,7 +74,9 @@ const Main = ({ navigation }) => {
 			setLoading(false)
 			setGrades(data)
 		}
-	)}, []);
+	).catch(setError)
+
+}, []);
 
 	const onRefresh = React.useCallback(() => {
 		setRefreshing(true);
@@ -81,6 +84,7 @@ const Main = ({ navigation }) => {
 			setGrades(data);
 			setRefreshing(false)
 		})
+		.catch(setError)
 	}, []);
 
 	const courseSkeleton = {
@@ -93,7 +97,10 @@ const Main = ({ navigation }) => {
 
 
     return <SafeAreaView style={GlobalStyles.container}>
-        {/* <Header /> */}
+		{error && 
+			<Text style={{color: 'red'}}>becca fucked up! screenshot this error and send it to her, please! {'\n'} {error} </Text>
+		
+		}
 		<SkeletonContent
 			isLoading={loading}
 			boneColor="#121212"

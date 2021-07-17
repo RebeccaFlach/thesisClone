@@ -28,6 +28,8 @@ export default function App() {
 		api.login().then((user) => {
 			if (!user)
 				setLoggedIn(false)
+			else
+				setLoggedIn(true);
 		})
     
   
@@ -76,6 +78,7 @@ export default function App() {
 					style={[styles.input]}
 					autoCompleteType='password'
 					textContentType='password'
+					secureTextEntry
 				/>
 	
 				<Button onPress={setInfo}title='login' />
@@ -110,9 +113,7 @@ export default function App() {
 
 
     {!loggedIn 
-	? 
-	// <Login login={login}/> 
-	<SignUp />
+	? <SignUp />
 	:
     <Tabs.Navigator 
       tabBarOptions={{
@@ -121,31 +122,33 @@ export default function App() {
         }
       }}
     >
+
+		<Tabs.Screen name='Grades' component={Homepage} 
+			options={{
+			tabBarIcon: ({ color, size }) => (
+				<MaterialCommunityIcons name="home" color={color} size={size} />
+			)
+			}}
+      	/>
       
-      <Tabs.Screen name='Messages' component={Messages}
-        options={{
-          tabBarIcon: ({ color, size }) => (
-            <MaterialCommunityIcons name="email" color={color} size={size} />
-          )
-        }}
-		
-      />
+		<Tabs.Screen name='Messages' component={Messages}
+			options={{
+			tabBarIcon: ({ color, size }) => (
+				<MaterialCommunityIcons name="email" color={color} size={size} />
+			)
+			}}
+			
+		/>
 
-      <Tabs.Screen name='History' component={History} 
-        options={{
-          tabBarIcon: ({ color, size }) => (
-            <MaterialCommunityIcons name='book-account' color={color} size={size} />
-          )
-        }}
-      />
+		<Tabs.Screen name='History' component={History} 
+			options={{
+			tabBarIcon: ({ color, size }) => (
+				<MaterialCommunityIcons name='book-account' color={color} size={size} />
+			)
+			}}
+		/>
 
-      <Tabs.Screen name='Homepage' component={Homepage} 
-        options={{
-          tabBarIcon: ({ color, size }) => (
-            <MaterialCommunityIcons name="home" color={color} size={size} />
-          )
-        }}
-      />
+      
 
     </Tabs.Navigator>
 }

@@ -45,7 +45,7 @@ const Login = () => {
                     textContentType='password'
                 />
 
-            <Button onPress={setInfo}title='login' />
+            <Button onPress={setInfo} title='login'/>
         </KeyboardAvoidingView>
     </SafeAreaView>
   );
@@ -102,10 +102,10 @@ const EnterZip = ({navigation}) => {
         })
     }
 
-    return <SafeAreaView style={[GlobalStyles.container, {flex: 1, justifyContent: 'center', alignItems: 'center'}]} >
+    return <SafeAreaView style={[GlobalStyles.container, ]} >
 
         <KeyboardAvoidingView 
-            style={{width: '100%', marginBottom: 50}} 
+            style={{ marginBottom: 50, flex: 1, justifyContent: 'center', alignItems: 'center'}} 
             behavior={Platform.OS === "ios" ? "position" : "height"}
             keyboardVerticalOffset={30}
         >
@@ -113,10 +113,11 @@ const EnterZip = ({navigation}) => {
                 placeholder='Enter your zipcode'
                 placeholderTextColor='#b0b0b0'
                 onChangeText={setZip} 
-                style={[styles.input, GlobalStyles.text]}
+                style={[styles.input, GlobalStyles.text, ]}
             />
 
             <Button title='Find District' onPress={getDistricts} />
+            
         </KeyboardAvoidingView>
     </SafeAreaView>
 

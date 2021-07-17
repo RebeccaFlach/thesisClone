@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios, { AxiosResponse } from "axios";
 import xml2js from 'xml2js';
 import convert from 'xml-js';
 
@@ -85,7 +85,6 @@ const Api = {
         return this.parseData(this.request('GetPXPMessages'))
             .then((messageData) => messageData?.PXPMessagesData.MessageListings.MessageListing)
             .catch(err => {
-                console.log(err)
                 return Promise.reject(err);
             })
     },
@@ -126,10 +125,21 @@ const Api = {
     },
 
     async getHistory() {
-        const token = await this.getAuthToken()
+        const token = await this.getAuthToken();
+
+        let res:AxiosResponse<any>;
+        let data;
+        try {
+            res = await axios.get(`${this.domain}/PXP2_CourseHistory.aspx?token=${token}&AGU=0`)
+            if (res.status != 200)
+                return Promise.reject(res)
             
-        const res = await axios.get(`${this.domain}/PXP2_CourseHistory.aspx?token=${token}&AGU=0`)
-        const data = res.data
+        }
+        catch (err) {
+            return Promise.reject(err);
+        }
+        
+        data = res.data;
 
         const find = (start, end, startAt?) => {
             let toSearch = data.substring(startAt || 0);
@@ -140,13 +150,18 @@ const Api = {
 
             return toSearch.substring(0, endI)
         }
+        // console.log(data)
+        console.log(data.substring(90000))
 
         const unweighted = find('<span class="gpa-score">', '</span>')
+        // console.log(unweighted)
 
         const weighted = find('<span class="gpa-score">', '</span>', data.indexOf('Weighted'))
 
+            // console.log(weighted)
         const courseHistory = JSON.parse(find('PXP.CourseHistory =', 'PXP.Translations.CourseHistory').trim());
 
+        // console.log(courseHistory)
         return {unweighted: unweighted, weighted: weighted, history: courseHistory.reverse()}
     },
 
@@ -222,7 +237,7 @@ const Api = {
         this.user = user;
         this.pass = pass;
         
-        return this.parseData(this.request('GetPXPMessages')).then((res) => {
+        return this.getAuthToken().then((res) => {
             return '';
         })
         .catch((err) => err)
