@@ -72,25 +72,26 @@ const Api = {
 
             return data;
         })
-
-        .catch((err) => {
-            console.log('error')
-            console.log(err)
-            return Promise.reject(err)
-        })
+        .catch((err) => Promise.reject(this.getErrorMessage(err)))
         
     },
 
     async getMessages():Promise<any> {
         return this.parseData(this.request('GetPXPMessages'))
-            .then((messageData) => messageData?.PXPMessagesData.MessageListings.MessageListing)
-            .catch(err => {
-                return Promise.reject(err);
+            .then((messageData) => {
+                const messages = messageData?.PXPMessagesData.MessageListings.MessageListing;
+                AsyncStorage.setItem('messages', JSON.stringify(messages));
+                return {data: messages, error: null};
+            })
+            .catch((err) => {
+                return AsyncStorage.getItem('messages').then((data) => {
+                    return {error: err, data: JSON.parse(data)}
+                })
+                .catch(err => {return {error: err, data: null}})
             })
     },
 
     getGrades() {
-
         return this.parseData(this.request('Gradebook'))
             .then((gradebook) => {
                 const courses = gradebook.Gradebook.Courses.Course;
@@ -102,13 +103,27 @@ const Api = {
                         room: course._attributes.Room,
                         grade: course.Marks.Mark._attributes.CalculatedScoreRaw,
                         letterGrade: course.Marks.Mark._attributes.CalculatedScoreString,
-                        assignments: course.Marks.Mark.Assignments.Assignment
+                        assignments: _(course.Marks.Mark.Assignments.Assignment).map((a) => {
+                            return {
+                            name: a._attributes.Measure,
+                            id: a._attributes.GradebookID,
+                            points: a._attributes.Points,
+                        }})
 
                     }
                 });
 
-                return summary;
+                this.storeData('grades', summary)
+
+                return {error: null, data: summary};
+            }).catch((err) => {
+                return AsyncStorage.getItem('grades').then((data) => {
+                    return {error: err, data: JSON.parse(data)}
+                })
+                .catch(err => {return {error: err, data: null}})
             })
+
+            //catch- return this.getitem(grades)
     },
 
     getAuthToken() {
@@ -150,18 +165,17 @@ const Api = {
 
             return toSearch.substring(0, endI)
         }
-        // console.log(data)
-        console.log(data.substring(90000))
 
-        const unweighted = find('<span class="gpa-score">', '</span>')
-        // console.log(unweighted)
+        let unweighted = find('<span class="gpa-score">', '</span>')
+        if (isNaN(parseFloat(unweighted)))
+            unweighted = 'N/A'
 
-        const weighted = find('<span class="gpa-score">', '</span>', data.indexOf('Weighted'))
+        let weighted = find('<span class="gpa-score">', '</span>', data.indexOf('Weighted'))
+        if (isNaN(parseFloat(weighted)))
+            weighted = 'N/A'
 
-            // console.log(weighted)
         const courseHistory = JSON.parse(find('PXP.CourseHistory =', 'PXP.Translations.CourseHistory').trim());
 
-        // console.log(courseHistory)
         return {unweighted: unweighted, weighted: weighted, history: courseHistory.reverse()}
     },
 
@@ -179,9 +193,27 @@ const Api = {
         this.parseData(this.request('GetReportCardInitialData'))
     },
 
+    async getStudentInfo() {
+        const info = await this.parseData(this.request('StudentClassList'))
+        console.log(info);
+        return info;
+    },
+
+
+
+
+    getErrorMessage(error:string) {
+        console.log(error);
+
+        return error;
+    },
+
+
+
+
     async storeData(key, value) {
         try {
-          await AsyncStorage.setItem(key, value)
+          await AsyncStorage.setItem(key, JSON.stringify(value))
         } catch (e) {
           console.log('error')
           console.log(e)

@@ -25,11 +25,8 @@ const ClassView = ({route, navigation}) => {
 
 
         const saveNewName = () => {
-            console.log('saving')
             saveName(courseInfo.title, newName)
             setEditing(false)
-            // api.setName(courseInfo.title, newName)
-            // setNames('testing');
         }
 
         // console.log(names);
@@ -39,7 +36,7 @@ const ClassView = ({route, navigation}) => {
 
         const renderName = () => {
             return <>
-                <Text style={[GlobalStyles.text, {fontSize: 30}]}>
+                <Text style={[GlobalStyles.text, {fontSize: 30, marginRight: 15}]}>
                     {title}
                 </Text>
                 <Icon 
@@ -93,17 +90,17 @@ const ClassView = ({route, navigation}) => {
     return <SafeAreaView style={[GlobalStyles.container ]}>
         <FlatList
             data={courseInfo.assignments}
-            renderItem={({item}) => <Assignment assignment={item._attributes} />}
-            keyExtractor={(item) => item._attributes.GradebookID}
+            renderItem={({item}) => <Assignment assignment={item} />}
+            keyExtractor={(item) => item.id}
             ListHeaderComponent={ClassDetails}
         />
     </SafeAreaView>
 }
 
 
-const Assignment = (props: {assignment: AssignmentEntity}) => {
+const Assignment = (props: {assignment}) => {
 
-    const points = props.assignment.Points.split(' / ')
+    const points = props.assignment.points.split(' / ')
 
     const pointsEarned = parseFloat(points[0]);
     const pointsPossible = parseFloat(points[1]);
@@ -111,7 +108,7 @@ const Assignment = (props: {assignment: AssignmentEntity}) => {
     //parsing removes trailing 0s
     let writtenScore = parseFloat(pointsEarned.toFixed(1)) + ' / ' + parseFloat(pointsPossible.toFixed(1));
     if (isNaN(pointsEarned) || isNaN(pointsPossible))
-        writtenScore = props.assignment.Points
+        writtenScore = props.assignment.points
 
     let score = parseFloat(((pointsEarned / pointsPossible) * 100).toFixed(1)) as any;
     if (pointsPossible === 0 && pointsEarned > 0)
@@ -130,7 +127,7 @@ const Assignment = (props: {assignment: AssignmentEntity}) => {
         {/* <Text style={[GlobalStyles.text, {flex: 1}]}> */}
         
         <Text style={[{fontSize: 15, flex: 1, marginRight: 20}, GlobalStyles.text]} numberOfLines={2}>
-            {props.assignment.Measure} 
+            {props.assignment.name} 
         </Text>
         <Text style={[GlobalStyles.text, {fontSize: 20}]} >
             {score}

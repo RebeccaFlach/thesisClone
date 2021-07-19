@@ -21,6 +21,7 @@ import SkeletonContent from 'react-native-skeleton-content';
 import _ from 'underscore';
 
 
+import ErrorHandler from './ErrorHandler';
 
 interface Grade {
   title: string,
@@ -65,26 +66,32 @@ const Main = ({ navigation }) => {
 
 	const [loading, setLoading] = React.useState(true);
     const [refreshing, setRefreshing] = React.useState(false);
+	const [attempts, setAttempts] = React.useState<number>(0);
 
-	const [error, setError] = React.useState();
-    const [grades, setGrades] = React.useState<Grade[]>();
+	const [res, setRes] = React.useState(null);
+	const grades:Grade[] = res?.data;
+
+	const getGrades = () => {
+		return api.getGrades().then((res) => {
+			setRes(res);
+
+			if (res.error)
+				setAttempts(attempts + 1)
+		})
+		
+	}
+
+
 
     React.useEffect(() => {	
-		api.getGrades().then((data) => {
-			setLoading(false)
-			setGrades(data)
-		}
-	).catch(setError)
+		getGrades().then(() => setLoading(false))
+	}, []);
 
-}, []);
+
 
 	const onRefresh = React.useCallback(() => {
 		setRefreshing(true);
-		api.getGrades().then((data) => {
-			setGrades(data);
-			setRefreshing(false)
-		})
-		.catch(setError)
+		getGrades().then(() => setRefreshing(false))
 	}, []);
 
 	const courseSkeleton = {
@@ -95,12 +102,12 @@ const Main = ({ navigation }) => {
 		]
 	}
 
+	
+
 
     return <SafeAreaView style={GlobalStyles.container}>
-		{error && 
-			<Text style={{color: 'red'}}>becca fucked up! screenshot this error and send it to her, please! {'\n'} {error} </Text>
-		
-		}
+		{/* <FlashMessage ref={pageRef} autoHide={false}/> */}
+		<ErrorHandler res={res} getFunc={getGrades} attempts={attempts}/>
 		<SkeletonContent
 			isLoading={loading}
 			boneColor="#121212"

@@ -15,6 +15,8 @@ import { createStackNavigator } from '@react-navigation/stack';
 import api from '../api';
 import SkeletonContent from 'react-native-skeleton-content';
 
+import ErrorHandler from '../ErrorHandler';
+
 
 const Messages = () => {
     const Stack = createStackNavigator()
@@ -28,20 +30,23 @@ const Messages = () => {
 }
 
 const Main = ({navigation}) => {
-    const [messages, setMessages] = React.useState<IMessage[]>(null);
     const [refreshing, setRefreshing] = React.useState(false);
     const [loading, setLoading] = React.useState<boolean>(true);
-    const [error, setError] = React.useState();
+    const [res, setRes] = React.useState(null);
+    const [attempts, setAttempts] = React.useState<number>(0);
+    const messages = res?.data;
 
-    React.useEffect(() => {
-        api.getMessages()
-            .then((data) => {
-                setMessages(data);
-                setLoading(false);
-            })
-            .catch(setError)
+    const getMessages = () => {
+		return api.getMessages().then((res) => {
+			setRes(res);
+			if (res.error)
+				setAttempts(attempts + 1)
+		})
+    }
 
-    }, []);
+    React.useEffect(() => {	
+		getMessages().then(() => setLoading(false))
+	}, []);
 
     const renderMessage = ({ item }) => {
         return <Message 
@@ -55,11 +60,9 @@ const Main = ({navigation}) => {
 
     const onRefresh = React.useCallback(() => {
         setRefreshing(true);
-        api.getMessages().then((data) => {
-            setMessages(data);
+        getMessages().then(() => {
             setRefreshing(false)
         })
-        .catch(setError)
     }, []);
 
     const messageSkeleton = {
@@ -69,12 +72,9 @@ const Main = ({navigation}) => {
       ]
     }
 
+    console.log(messages)
     return <SafeAreaView  style={GlobalStyles.container}>
-        {error && 
-			<Text style={{color: 'red'}}>
-                becca fucked up! screenshot this error and send it to her, please! {'\n'} {error} 
-            </Text>
-		}
+        <ErrorHandler res={res} attempts={attempts} getFunc={getMessages}/>
         <SkeletonContent 
             layout={Array(4).fill(messageSkeleton)}
             isLoading={loading}
