@@ -1,6 +1,6 @@
 import React from 'react';
 import axios from 'axios';
-import { StyleSheet, Text, View, Button, TextInput, FlatList, Pressable, ScrollView, RefreshControl, ListView, SafeAreaView } from 'react-native';
+import { StyleSheet, Text, View, Button, TextInput, FlatList, Pressable, ScrollView, RefreshControl, ListView, SafeAreaView, Linking } from 'react-native';
 import config from '../config';
 import GlobalStyles from '../GlobalStyles';
 
@@ -72,7 +72,7 @@ const Main = ({navigation}) => {
       ]
     }
 
-    console.log(messages)
+    // console.log(messages)
     return <SafeAreaView  style={GlobalStyles.container}>
         <ErrorHandler res={res} attempts={attempts} getFunc={getMessages}/>
         <SkeletonContent 
@@ -119,6 +119,10 @@ const Message = (props) => {
 }
 
 const FullMessage = ({route, navigation}) => {
+
+
+    const message = route.params;
+
     const style = `
         <style>
             body {
@@ -138,16 +142,25 @@ const FullMessage = ({route, navigation}) => {
                 color: #91ADD4 !important;
             }
         </style>
+        <h2>${message.subject}</h2>
         
     `;
+   
 
     return <SafeAreaView style={GlobalStyles.container}>
         <WebView
-            style={GlobalStyles.container}
-            containerStyle={{backgroundColor: '#282c34', color:'#f0f0f0'}}
             originWhitelist={['*']}
-            source={{ html:  style + route.params.content}}
+            source={{ html:  style + message.content}}
+            onShouldStartLoadWithRequest={event => {
+                //open external links in browser
+                if (event.url !== 'about:blank') {
+                    Linking.openURL(event.url)
+                    return false
+                }
+                return true
+            }}
         />
+       
     </SafeAreaView>
 }
 
