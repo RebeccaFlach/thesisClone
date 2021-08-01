@@ -143,19 +143,19 @@ const Grade = (props) => {
 		let color;
 		switch(props.info.letterGrade){
 			case 'A': 
-			color = '#63ff00';
+			color = '#3B9900';
 			break;
 			case 'B':
-			color = '#d6ff00';
+			color = '#80B90E';
 			break;
 			case 'C': 
-			color = '#ffff00';
+			color = '#EDC812';
 			break;
 			case 'D':
-			color = '#ffc100';
+			color = '#ED9212';
 			break;
 			default: 
-			color = '#ff0000';
+			color = '#E41B1B';
 		}
     return <Text style = {{fontSize: 40, color: color}}>
 		{props.info.letterGrade}
@@ -164,7 +164,7 @@ const Grade = (props) => {
   	const [names, saveName] = React.useContext(NamesContext)
 	const nickname = names[props.info.title]
 
-	return <View>
+	return <View >
 	<Pressable 
 		onPress={() => {props.nav.navigate('ClassView', {...props.info, nickName: props.nickName})}} 
 		style={[styles.courseSection, GlobalStyles.section]}
@@ -209,6 +209,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     height: 90,
+	padding: 20
   },
   header: {
     height: '10%',
@@ -219,7 +220,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   gradeList: {
-    padding: 20
+    padding: 0,
+	// height: '100%'
   }
 });
 
