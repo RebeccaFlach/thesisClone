@@ -1,15 +1,11 @@
 import React from 'react';
 import axios from 'axios';
 import { StyleSheet, Text, View, Button, TextInput, FlatList, Pressable, ScrollView, RefreshControl, ListView, SafeAreaView, Linking } from 'react-native';
-import config from '../config';
 import GlobalStyles from '../GlobalStyles';
 
-// import purify from 'DOMpurify';
 import WebView from 'react-native-webview';
 
 import textVersion from 'textversionjs'
-
-import { MessageList, IMessage } from '../../backend/src/model/Messages';
 
 import { createStackNavigator } from '@react-navigation/stack';
 import api from '../api';
@@ -17,15 +13,19 @@ import SkeletonContent from 'react-native-skeleton-content';
 
 import ErrorHandler from '../ErrorHandler';
 
+import linkify from 'linkifyjs/html';
+import {decode} from 'html-entities';
 
 const Messages = () => {
     const Stack = createStackNavigator()
     //api call to update read
     
-    return <Stack.Navigator headerMode={'none'}>
+    return <View style={GlobalStyles.container} >
+        <Stack.Navigator headerMode={'none'} >
         <Stack.Screen component={Main} name='Messages' />
         <Stack.Screen component={FullMessage} name={'FullMessage'}/>
     </Stack.Navigator>
+    </View>
 
 }
 
@@ -46,14 +46,20 @@ const Main = ({navigation}) => {
 
     React.useEffect(() => {	
 		getMessages().then(() => setLoading(false))
+        // api.markRead()
+        // api.getStudentHealth();
 	}, []);
 
     const renderMessage = ({ item }) => {
+        // console.log(item.AttachmentDatas.AttachmentData)
+        if (!item._attributes.Read)
+            console.log('not read!')
         return <Message 
             subject={item._attributes.SubjectNoHTML} 
             content={item._attributes.Content}
             from={item._attributes.From}
             date={item._attributes.BeginDate}
+            attachments={item.AttachmentDatas.AttachmentData}
             nav={navigation}
         />
     }
@@ -72,21 +78,27 @@ const Main = ({navigation}) => {
       ]
     }
 
-    // console.log(messages)
     return <SafeAreaView  style={GlobalStyles.container}>
         <ErrorHandler res={res} attempts={attempts} getFunc={getMessages}/>
         <SkeletonContent 
             layout={Array(4).fill(messageSkeleton)}
             isLoading={loading}
-            boneColor="#121212"
-			highlightColor="#333333"
+            boneColor="#202022"
+			highlightColor="#444444"
         >
             <FlatList
                 data={messages}
                 renderItem={renderMessage}
                 keyExtractor={(message) => message._attributes.ID}
-                refreshing={refreshing}
-                onRefresh={onRefresh}
+                
+                refreshControl={
+                    <RefreshControl
+                        refreshing={refreshing}
+                        onRefresh={onRefresh}
+                        tintColor="#fff"
+                        title=''
+                     />
+                  }
             />
         </SkeletonContent>
 
@@ -99,19 +111,30 @@ const Message = (props) => {
     if (preview.length > 75)
         preview = preview.substring(0, 70) + '...';
 
-    preview = preview.replace(/&#39;/g, `'`) //yeah ill do this properly eventually
+    preview = decode(preview)
  
+
+    React.useEffect(() => {
+        if (props.attachments && props.attachments[0]){
+            const fileInfo = props.attachments[0]._attributes.SmAttachmentGU;
+            console.log(fileInfo)
+
+            
+        }
+
+
+    }, [])
     return <Pressable 
         onPress={() => {
             props.nav.navigate('FullMessage', 
             {subject: props.subject, content: props.content, from: props.from, date: props.date}
             )}
         } >
-        <View style={[styles.message]}>
+        <View style={[styles.message, GlobalStyles.section]}>
             <Text style={[GlobalStyles.text]}>
-                <Text style={{fontSize: 12, color: '#e0e0e0'}}>{ props.from }</Text> {'\n'}
+                <Text style={[{fontSize: 12}, GlobalStyles.secondaryText]}>{ props.from }</Text> {'\n'}
                 <Text style={{fontSize: 20}}>{ props.subject }</Text> {'\n'}
-                <Text style={{color: '#d0d0d0'}}>{preview}</Text>
+                <Text style={GlobalStyles.secondaryText}>{preview}</Text>
 
             </Text>
         </View>
@@ -119,20 +142,24 @@ const Message = (props) => {
 }
 
 const FullMessage = ({route, navigation}) => {
-
+    const [webviewLoaded, setWebviewLoaded] = React.useState<boolean>(false);
 
     const message = route.params;
 
     const style = `
         <style>
-            body {
-                background-color: #282c34;
-                color: #f0f0f0 !important;
+            html {
+                background-color: ${GlobalStyles.container.backgroundColor};
+                color: ${GlobalStyles.text.color};
                 font-size: 3.5rem;
                 max-width: 100%;
                 overflow-wrap: break-word;
+                
+            }
+            #main {
+                background-color: ${GlobalStyles.section.backgroundColor};
                 padding: 40px;
-                margin-top: 40px;
+
             }
             span {
                 color: #f0f0f0 !important;
@@ -142,22 +169,31 @@ const FullMessage = ({route, navigation}) => {
                 color: #91ADD4 !important;
             }
         </style>
-        <h2>${message.subject}</h2>
+        <h3>${message.subject}</h3>
         
     `;
-   
+
+    let content = message.content.replace(/style=".*"/gm, '') //remove styles because tusd is committed to eyesores
+    content = linkify(content)
 
     return <SafeAreaView style={GlobalStyles.container}>
         <WebView
+            onLoadStart={event => { //prevent flash of white screen 
+                setTimeout(() => {
+                    setWebviewLoaded(true);
+                }, 350)
+            }}
+            // containerStyle={GlobalStyles.container}
             originWhitelist={['*']}
-            source={{ html:  style + message.content}}
+            style={[{ opacity: webviewLoaded ? 1 : 0,}]}
+            source={{ html:  '<div id="main">' + style + content + '</div>'}}
             onShouldStartLoadWithRequest={event => {
                 //open external links in browser
                 if (event.url !== 'about:blank') {
                     Linking.openURL(event.url)
-                    return false
+                    return false;
                 }
-                return true
+                return true;
             }}
         />
        
@@ -168,8 +204,6 @@ const styles = StyleSheet.create({
     message: {
         padding: 20, 
         minHeight: 50,
-        borderBottomWidth: 1,
-        borderBottomColor: '#666666',
     }
 })
 
