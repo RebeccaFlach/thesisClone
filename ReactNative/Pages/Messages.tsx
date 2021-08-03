@@ -1,6 +1,6 @@
 import React from 'react';
 import axios from 'axios';
-import { StyleSheet, Text, View, Button, TextInput, FlatList, Pressable, ScrollView, RefreshControl, ListView, SafeAreaView, Linking } from 'react-native';
+import { StyleSheet, Text, View, Button, TextInput, FlatList, Pressable, ScrollView, RefreshControl,  SafeAreaView, Linking } from 'react-native';
 import GlobalStyles from '../GlobalStyles';
 
 import WebView from 'react-native-webview';
@@ -90,7 +90,7 @@ const Main = ({navigation}) => {
                 data={messages}
                 renderItem={renderMessage}
                 keyExtractor={(message) => message._attributes.ID}
-                
+                ListEmptyComponent={<Text style={GlobalStyles.text}>empty list</Text>}
                 refreshControl={
                     <RefreshControl
                         refreshing={refreshing}
@@ -159,11 +159,8 @@ const FullMessage = ({route, navigation}) => {
             #main {
                 background-color: ${GlobalStyles.section.backgroundColor};
                 padding: 40px;
+                min-height: 100%;
 
-            }
-            span {
-                color: #f0f0f0 !important;
-                font-size: 3.5rem !important;
             }
             a {
                 color: #91ADD4 !important;
@@ -183,9 +180,8 @@ const FullMessage = ({route, navigation}) => {
                     setWebviewLoaded(true);
                 }, 350)
             }}
-            // containerStyle={GlobalStyles.container}
             originWhitelist={['*']}
-            style={[{ opacity: webviewLoaded ? 1 : 0,}]}
+            style={[{ opacity: webviewLoaded ? 1 : 0},]}
             source={{ html:  '<div id="main">' + style + content + '</div>'}}
             onShouldStartLoadWithRequest={event => {
                 //open external links in browser

@@ -82,8 +82,8 @@ const Main = ({navigation}) => {
             </Text>
 		}
         <SkeletonContent 
-            boneColor="#121212"
-			highlightColor="#333333"
+            boneColor="#202022"
+			highlightColor="#444444"
 			containerStyle={{width: '100%', flex: 1}}
             isLoading={loading}
             layout={skeletons}
@@ -116,7 +116,7 @@ const History = () => {
 
 
 const Year = (props: {name:string, terms: GradedTerm[]}) => {
-    return ( <View style={[GlobalStyles.section]}>
+    return ( <View style={{marginBottom: 20}}>
         <Text style={[GlobalStyles.text, {fontSize: 35, textAlign: 'center', padding: 15}]}>
             {props.name}
         </Text>
@@ -128,8 +128,8 @@ const Year = (props: {name:string, terms: GradedTerm[]}) => {
 }
 
 const Term = (props: {name: string, courses: GradedCourse[]}) => {
-    return <View style={styles.term}>
-
+    return <View style={[GlobalStyles.section, {padding: 20, marginBottom: 20}]}>
+        <View>
         <Text style={[GlobalStyles.text, {fontSize: 25, textDecorationLine: 'underline',}]}>
             {props.name}{'\n'}
         </Text>
@@ -147,6 +147,7 @@ const Term = (props: {name: string, courses: GradedCourse[]}) => {
                 </Text>
             </View>) 
         )}
+    </View>
     </View>
 }
 
@@ -166,15 +167,11 @@ const ReportCard = () => {
 const ReportCards = ({navigation}) => {
     const [docs, setDocs] = React.useState<Document[]>();
     const [error, setError] = React.useState();
+    //ERROR HANDLING
 
     React.useEffect(() => {api.getDocuments().then(setDocs).catch(setError)},[])
 
     return <SafeAreaView style={GlobalStyles.container}>
-        {error && 
-			<Text style={{color: 'red'}}>
-                becca fucked up! screenshot this error and send it to her, please! {'\n'} {error} 
-            </Text>
-		}
         <FlatList 
             data={docs}
             renderItem={({item}) => <View
@@ -209,13 +206,16 @@ const ReportCards = ({navigation}) => {
 const DocView = ({route, navigation}) => {
     const src = 'data:application/pdf;base64,' + route.params
 
-    return <View style={GlobalStyles.container}>
+    return <SafeAreaView style={GlobalStyles.container}>
         <PDFReader
             source={{base64: src}}
-            // webviewStyle={GlobalStyles.container}
+            style={GlobalStyles.container}
+            customStyle={{
+                readerContainerZoomContainer: GlobalStyles.container
+            }}
         />
 
-    </View>
+    </SafeAreaView>
 
 }
 
@@ -223,12 +223,14 @@ const DocView = ({route, navigation}) => {
 const styles = StyleSheet.create({
     term: {
         padding: 15, 
-        backgroundColor: '#202226',
-        borderRadius: 20,
-        margin: 15,
-        shadowColor: 'black',
-        shadowOpacity: 0.2,
-        shadowRadius: 12
+        // backgroundColor: '#292c30',
+        // backgroundColor: 'rgba(255, 255, 255, 0.05)',
+        // borderRadius: 20,
+        // margin: 10,
+        // shadowColor: 'black',
+        // shadowOpacity: 1,
+        // shadowRadius: 5,
+        // shadowOffset: {width: 0, height: 20}
     },
     grade: {
         flex: 1,

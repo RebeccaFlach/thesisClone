@@ -150,9 +150,9 @@ const DistrictList = ({route, navigation}) => {
     const renderHeader = () => <Search filterFunc={filterDistricts}/>
 
     const selectDistrict = (district:District) => {
-        api.storeData('domain', district.PvueURL)
+        AsyncStorage.setItem('domain', district.PvueURL)
         api.domain = district.PvueURL;
-        navigation.navigate('Login')
+        navigation.navigate('Login');
         
     }
 

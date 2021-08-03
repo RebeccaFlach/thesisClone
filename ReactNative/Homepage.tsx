@@ -106,12 +106,11 @@ const Main = ({ navigation }) => {
 
 
     return <SafeAreaView style={GlobalStyles.container}>
-		{/* <FlashMessage ref={pageRef} autoHide={false}/> */}
 		<ErrorHandler res={res} getFunc={getGrades} attempts={attempts}/>
 		<SkeletonContent
 			isLoading={loading}
-			boneColor="#121212"
-			highlightColor="#333333"
+			boneColor="#202022"
+			highlightColor="#444444"
 			containerStyle={{width: '100%', flex: 1}}
 			layout={Array(4).fill(courseSkeleton)}
 		>
@@ -172,20 +171,17 @@ const Grade = (props) => {
 	
 		<LetterGrade />
 		<Text 
-			style={[GlobalStyles.text, {fontSize: 20, marginLeft: 20, marginRight: 20, flex: 1,} ]} 
+			style={[GlobalStyles.text, {fontSize: 18, marginLeft: 20, marginRight: 15, flex: 1,} ]} 
 			numberOfLines={1}
 		>
 			{nickname|| props.info.title} 
 			
 		</Text> 
 
-		<Text style={[GlobalStyles.text, {fontSize: 30}]} >{ props.info.grade } </Text>
+		<Text style={[GlobalStyles.text, {fontSize: 28}]} >{ props.info.grade } </Text>
 
 
 	</Pressable>
-{/* 
-	<TextInput style={{width: 100, height: 40, borderColor: 'white', borderWidth: 2}} onChangeText={setNewName}></TextInput>
-  	<Button title='save' onPress={saveNewName}/> */}
 </View>
 }
 
@@ -208,8 +204,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    height: 90,
-	padding: 20
+    height: 95,
+	padding: 20,
   },
   header: {
     height: '10%',

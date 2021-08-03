@@ -13,6 +13,7 @@ import {AssignmentEntity} from '../../backend/src/model/GradeBook'
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import { NamesContext } from '../Homepage';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 const ClassView = ({route, navigation}) => {
     const courseInfo = route.params;
@@ -36,7 +37,7 @@ const ClassView = ({route, navigation}) => {
 
         const renderName = () => {
             return <>
-                <Text style={[GlobalStyles.text, {fontSize: 30, marginRight: 15}]}>
+                <Text style={[GlobalStyles.text, {fontSize: 30, marginRight: 10, flex: 1, flexWrap: 'wrap', flexDirection: 'row'}]}>
                     {title}
                 </Text>
                 <Icon 
@@ -45,6 +46,7 @@ const ClassView = ({route, navigation}) => {
                     onPress={() => {setEditing(true)}} 
                     color='rgb(10, 132, 255)'
                 />
+                
             </>
         }
 
@@ -62,23 +64,23 @@ const ClassView = ({route, navigation}) => {
         	{/* <Button title='save' onPress={saveNewName}/> */}
         </>
 
-        return <View style={[{marginBottom: 40, padding: 20}]}>
+        return <View style={[{marginBottom: 20, padding: 20}, GlobalStyles.section]}>
                 
-            <View style={[ {flex: 1, justifyContent: 'space-between', flexDirection: 'row'}]}>
+            <View style={[ {flex: 1, justifyContent: 'space-between', flexDirection: 'row', maxWidth: '100%', }]}>
                 {editing? editingName : renderName()}
             </View>
 
-            <Text style={[GlobalStyles.secondaryText, {fontSize: 15}]}>
+            <Text style={[GlobalStyles.secondaryText, {fontSize: 15, marginBottom: 10}]}>
                 {secondaryName}
             </Text>
 
-            <Text style={[GlobalStyles.secondaryText, {fontSize: 20}]}>
-                {courseInfo.teacher}
+            <Text style={[GlobalStyles.secondaryText, {fontSize: 20, flex: 1}]}>
+                <MaterialCommunityIcons name="account" size={25} style={{opacity: 0.4}} /> {courseInfo.teacher}
             </Text>
 
 
             <Text style={[GlobalStyles.secondaryText, {fontSize: 20}]}>
-                Room: {courseInfo.room}
+                <MaterialCommunityIcons name="door-open" size={25} style={{opacity: 0.4}} /> {courseInfo.room}
             </Text>
         </View>
     }
@@ -147,7 +149,7 @@ const styles = StyleSheet.create({
         minHeight: 60,
         flexWrap: 'wrap',
         padding: 15,
-        
+
 
     },
     input: {

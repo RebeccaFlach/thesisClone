@@ -8,7 +8,6 @@ import _ from 'underscore';
 
 
 interface Props {
-    // ref: any, 
     res: any,
     getFunc: () => any,
     attempts:number
@@ -16,12 +15,14 @@ interface Props {
 
 const ErrorHandler = (props: Props) => {
 
-    const delayedRetry = () => {_(props.getFunc).delay(3000)}
+    const delayedRetry = () => {_(props.getFunc).delay(4000)}
 
     React.useEffect(() => {
         if (props.attempts < 2 && props.res?.error){
             console.log('retrying..')
+            console.log(props.res.error)
             delayedRetry();  
+            console.log(props.res.error)
         }
 
     }, [props.attempts])
@@ -43,6 +44,11 @@ const ErrorHandler = (props: Props) => {
         message += ', try again later.'
     }
 
+    //errors
+        //not available
+            //Class Schedule data not available for this school
+            //School District has not enabled access for the GradeBook Module.
+
     //need retry button
         
     return <View style={styles.container}>
@@ -55,8 +61,12 @@ const ErrorHandler = (props: Props) => {
 const styles = StyleSheet.create({
     container: {
         width: '100%',
-        backgroundColor: '#8f0f00',
-        padding: 10
+        backgroundColor: '#9c3333',
+        padding: 10,
+        shadowColor: 'black',
+        shadowOpacity: 0.5,
+        shadowRadius: 10,
+        shadowOffset: { width: 0, height: 10 }
 
     }
 

@@ -26,13 +26,13 @@ export default function App() {
 
   	React.useEffect(() => {
 		api.login().then((user) => {
+			// setLoggedIn(false)
 			if (!user)
 				setLoggedIn(false)
 			else
 				setLoggedIn(true);
 		})
     
-  
 	}, [])
 
 	const Login = () => {
@@ -44,7 +44,8 @@ export default function App() {
 			const res = await api.checkLogin(name, pass);
 			if (res){
 				console.log('setting err')
-				setError(res);
+				console.log(JSON.stringify(res))
+				setError(JSON.stringify(res));
 			}
 			else {
 				const passPromise = SecureStore.setItemAsync('password', pass);
@@ -111,28 +112,34 @@ export default function App() {
     <StatusBar barStyle='light-content'></StatusBar>
 
 
-
     {!loggedIn 
 	? <SignUp />
 	:
     <Tabs.Navigator 
       tabBarOptions={{
+		labelPosition: 'below-icon',
         style: {
-          backgroundColor: '#40454f'
+		backgroundColor: '#121219',
         }
       }}
+	  
     >
 
 		<Tabs.Screen name='Grades' component={Homepage} 
+
 			options={{
+				
+				
 			tabBarIcon: ({ color, size }) => (
-				<MaterialCommunityIcons name="home" color={color} size={size} />
-			)
+				<MaterialCommunityIcons name="home" color={color} size={size } />
+			),
+	
 			}}
       	/>
       
 		<Tabs.Screen name='Messages' component={Messages}
 			options={{
+				
 			tabBarIcon: ({ color, size }) => (
 				<MaterialCommunityIcons name="email" color={color} size={size} />
 			)

@@ -13,12 +13,7 @@ export default {
         borderBottomColor: '#444444',
         marginTop: -1,
         backgroundColor: 'rgba(255, 255, 255, 0.05)',
-        
-        // margin: 5,
-        // shadowColor: 'black',
-        // shadowOpacity: 0.8,
-        // shadowRadius: 3,
-        // borderRadius: 5
+        borderRadius: 2
             // padding: 20,
     },
     secondaryText: {
