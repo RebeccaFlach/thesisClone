@@ -1,18 +1,27 @@
 export default {
     container: {
-        backgroundColor: '#282c34',
+        backgroundColor: '#121219',
         height: '100%',
-        // padding: 20,
     },
     text: {
-        color: '#f0f0f0'
+        color: '#e5e5e5',
     },
     section: {
+        borderTopWidth: 1,
+        borderTopColor: '#444444',
         borderBottomWidth: 1,
-        borderBottomColor: '#666666',
-        // padding: 20,
+        borderBottomColor: '#444444',
+        marginTop: -1,
+        backgroundColor: 'rgba(255, 255, 255, 0.05)',
+        
+        // margin: 5,
+        // shadowColor: 'black',
+        // shadowOpacity: 0.8,
+        // shadowRadius: 3,
+        // borderRadius: 5
+            // padding: 20,
     },
     secondaryText: {
-        color: '#d0d0d0',
+        color: '#c0c0c0',
     }
 };
