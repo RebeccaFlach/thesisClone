@@ -1,15 +1,12 @@
 import React from 'react';
 import axios from 'axios';
 
-import { StyleSheet, Text, View, Button, TextInput, FlatList, Pressable, SafeAreaView } from 'react-native';
-import { slide as Menu } from 'react-burger-menu';
+import { StyleSheet, Text, View, Button, TextInput, FlatList, Pressable, SafeAreaView, Dimensions } from 'react-native';
 
 import { createStackNavigator } from '@react-navigation/stack';
 import AsyncStorage, { useAsyncStorage } from '@react-native-async-storage/async-storage';
 
 import GlobalStyles from './GlobalStyles';
-import config from './config';
-import { NavigationContainer } from '@react-navigation/native';
 
 import {AssignmentEntity} from '../backend/src/model/GradeBook';
 
@@ -37,12 +34,12 @@ const Homepage = ({ navigation }) => {
 	const Stack = createStackNavigator()
 	const [names, setNames] = React.useState<any>({});
 
-
 	React.useEffect(() => {	
 
 		api.getNames().then((data) => {
 			setNames(data || {})
 		}
+		
 	)}, []);
 
 	const saveName = (officialName, newName) => {
@@ -53,10 +50,18 @@ const Homepage = ({ navigation }) => {
 		AsyncStorage.setItem('classNicknames', JSON.stringify(newNames))
 	}
 
-	return <NamesContext.Provider value={[names, saveName]}>
-		<Stack.Navigator headerMode={'none'}>
-			<Stack.Screen component={Main} name="Main" />
-			<Stack.Screen component={ClassView} name={'ClassView'}/>
+	return <NamesContext.Provider value={[names, saveName]} >
+		<Stack.Navigator >
+			<Stack.Screen component={Main} name="Main"  options={{
+				// header: () => null
+				headerShown: false
+			}} />
+			<Stack.Screen component={ClassView} name={'ClassView'}
+				options={{
+					...GlobalStyles.header,
+					title: ''
+				}}
+			/>
 		</Stack.Navigator>
 	</NamesContext.Provider>
 
@@ -102,17 +107,17 @@ const Main = ({ navigation }) => {
 		]
 	}
 
-	
+	const height = Dimensions.get("window").height;
 
-
-    return <SafeAreaView style={GlobalStyles.container}>
+    return <SafeAreaView style={[GlobalStyles.container]} >
 		<ErrorHandler res={res} getFunc={getGrades} attempts={attempts}/>
 		<SkeletonContent
 			isLoading={loading}
 			boneColor="#202022"
 			highlightColor="#444444"
-			containerStyle={{width: '100%', flex: 1}}
+			containerStyle={{width: '100%',}}
 			layout={Array(4).fill(courseSkeleton)}
+			
 		>
 			<FlatList
 				data={grades}
@@ -120,8 +125,9 @@ const Main = ({ navigation }) => {
 					nav={navigation}
 					info={item}
 					key={item.title}
+					height={Math.floor(height/grades.length)}
 				/>
-			}
+				}
 
 				keyExtractor={(course) => course.title}
 				style={styles.gradeList}
@@ -134,7 +140,6 @@ const Main = ({ navigation }) => {
     </SafeAreaView>
   	}
 
-	  //Es instead of F's fucking hell why
 
 const Grade = (props) => {
 
@@ -142,19 +147,23 @@ const Grade = (props) => {
 		let color;
 		switch(props.info.letterGrade){
 			case 'A': 
-			color = '#3B9900';
-			break;
+				color = '#3B9900';
+				break;
 			case 'B':
-			color = '#80B90E';
-			break;
+				color = '#80B90E';
+				break;
 			case 'C': 
-			color = '#EDC812';
-			break;
+				color = '#EDC812';
+				break;
 			case 'D':
-			color = '#ED9212';
-			break;
+				color = '#ED9212';
+				break;
+			case 'E': 
+			case 'F':
+				color = '#E41B1B';
+				break;
 			default: 
-			color = '#E41B1B';
+				color = '#808080';
 		}
     return <Text style = {{fontSize: 40, color: color}}>
 		{props.info.letterGrade}
@@ -163,10 +172,15 @@ const Grade = (props) => {
   	const [names, saveName] = React.useContext(NamesContext)
 	const nickname = names[props.info.title]
 
-	return <View >
-	<Pressable 
+	//manually do max/min height bcs weird bug
+	let height = props.height
+	height = _([height, 120]).min()
+	height = _([height, 80 ]).max()
+	
+
+	return <Pressable 
 		onPress={() => {props.nav.navigate('ClassView', {...props.info, nickName: props.nickName})}} 
-		style={[styles.courseSection, GlobalStyles.section]}
+		style={[styles.courseSection, GlobalStyles.section, { height: height,}]}
 	>
 	
 		<LetterGrade />
@@ -182,7 +196,6 @@ const Grade = (props) => {
 
 
 	</Pressable>
-</View>
 }
 
 const Header = () => {
@@ -204,7 +217,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    height: 95,
 	padding: 20,
   },
   header: {
@@ -217,7 +229,7 @@ const styles = StyleSheet.create({
   },
   gradeList: {
     padding: 0,
-	// height: '100%'
+	height: '100%'
   }
 });
 

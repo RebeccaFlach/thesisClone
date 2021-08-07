@@ -115,18 +115,29 @@ const Api = {
                 const courses = gradebook.Gradebook.Courses.Course;
                 
                 const summary = courses.map((course) => {
+
+                    //love xml parsing
+                    let assignments = course.Marks.Mark.Assignments.Assignment;
+                    if (assignments){
+                        assignments = _(assignments).map((a) => {
+                            const assignment = a._attributes || a; 
+                            return {
+                                name: assignment.Measure,
+                                id: assignment.GradebookID,
+                                points: assignment.Points,
+                            }
+                        })
+                    }
+                    else 
+                        assignments = [];
+
                     return {
                         title: course._attributes.Title,
                         teacher: course._attributes.Staff,
                         room: course._attributes.Room,
                         grade: course.Marks.Mark._attributes.CalculatedScoreRaw,
                         letterGrade: course.Marks.Mark._attributes.CalculatedScoreString,
-                        assignments: _(course.Marks.Mark.Assignments.Assignment).map((a) => {
-                            return {
-                            name: a._attributes.Measure,
-                            id: a._attributes.GradebookID,
-                            points: a._attributes.Points,
-                        }})
+                        assignments: assignments,
 
                     }
                 });
@@ -135,13 +146,12 @@ const Api = {
 
                 return {error: null, data: summary};
             }).catch((err) => {
+                console.log('errored')
                 return AsyncStorage.getItem('grades').then((data) => {
                     return {error: err, data: JSON.parse(data)}
                 })
                 .catch(err => {return {error: err, data: null}})
             })
-
-            //catch- return this.getitem(grades)
     },
 
     getAuthToken() {

@@ -1,4 +1,4 @@
-export default {
+const GlobalStyles = {
     container: {
         backgroundColor: '#121219',
         height: '100%',
@@ -18,5 +18,17 @@ export default {
     },
     secondaryText: {
         color: '#c0c0c0',
+    },
+
+    header: {
+        headerStyle: {
+            backgroundColor: '#121219'
+        },
+        headerTitleStyle: {
+            color: '#e5e5e5',
+        },
+        headerBackTitleVisible: false,
     }
 };
+
+export default GlobalStyles;
