@@ -168,6 +168,12 @@ const Api = {
     },
 
     async getHistory() {
+        const handleErr = (err) => {
+            return AsyncStorage.getItem('history').then((data) => {
+                return {error: err, data: JSON.parse(data)}
+            })
+            .catch(err => {return {error: err, data: null}})
+        }
         const token = await this.getAuthToken();
 
         let res:AxiosResponse<any>;
@@ -175,11 +181,11 @@ const Api = {
         try {
             res = await axios.get(`${this.domain}/PXP2_CourseHistory.aspx?token=${token}&AGU=0`)
             if (res.status != 200)
-                return Promise.reject(res)
+                return handleErr(res)
             
         }
         catch (err) {
-            return Promise.reject(err);
+            return handleErr(err);
         }
         
         data = res.data;
@@ -203,8 +209,15 @@ const Api = {
             weighted = 'N/A'
 
         const courseHistory = JSON.parse(find('PXP.CourseHistory =', 'PXP.Translations.CourseHistory').trim());
+        const formattedData = {
+            unweighted: unweighted, 
+            weighted: weighted, 
+            history: courseHistory
+        }
 
-        return {unweighted: unweighted, weighted: weighted, history: courseHistory.reverse()}
+        AsyncStorage.setItem('history', JSON.stringify(formattedData)).catch()
+
+        return {err: null, data: formattedData }
     },
 
     getDocuments() {
