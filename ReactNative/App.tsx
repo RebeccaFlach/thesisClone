@@ -19,6 +19,7 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import GlobalStyles from './GlobalStyles';
 import api from './api';
 import * as SecureStore from 'expo-secure-store';
+import StudentInfo from './Pages/Student';
 
 export default function App() {
   const Tabs = createBottomTabNavigator();
@@ -119,7 +120,8 @@ export default function App() {
       tabBarOptions={{
 		labelPosition: 'below-icon',
         style: {
-		backgroundColor: '#121219',
+			backgroundColor: '#121219',
+			height: 50
         }
       }}
 	  
@@ -147,7 +149,7 @@ export default function App() {
 			
 		/>
 
-		<Tabs.Screen name='History' component={History} 
+		<Tabs.Screen name='Student Info' component={StudentInfo} 
 			options={{
 			tabBarIcon: ({ color, size }) => (
 				<MaterialCommunityIcons name='book-account' color={color} size={size} />

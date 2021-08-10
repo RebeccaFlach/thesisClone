@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, View, FlatList, Pressable, SafeAreaView } from 'react-native';
+import { StyleSheet, Text, View, FlatList, Pressable, SafeAreaView, Image } from 'react-native';
 
 import GlobalStyles from '../GlobalStyles';
 import api from '../api'
@@ -9,38 +9,42 @@ import { createStackNavigator } from '@react-navigation/stack';
 
 import PDFReader from 'rn-pdf-reader-js';
 import SkeletonContent from 'react-native-skeleton-content';
+import ErrorHandler from '../ErrorHandler';
 
-const Main = ({navigation}) => {
-    const [history, setHistory] = React.useState<GradeYear[]>();
-    const [unweighted, setUnweighted] = React.useState<string>();
-    const [weighted, setWeighted] = React.useState<string>();
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import { ScrollView } from 'react-native-gesture-handler';
+
+const CourseHistory = () => {
+    const [historyRes, setHistoryRes] = React.useState(null);
+    const [attempts, setAttempts] = React.useState<number>(0);
 
     const [refreshing, setRefreshing] = React.useState<boolean>(false);
     const [loading, setLoading] = React.useState<boolean>(true);
-    const [error, setError] = React.useState();
 
+    const getHistory = () => {
+        return api.getHistory().then((res:any) => {
+            setHistoryRes(res);
+            
+            if (res.error)
+				setAttempts(attempts + 1)
+        })
+    }
 
     const onRefresh = React.useCallback(() => {
         setRefreshing(true);
-        api.getHistory().then((data) => {
-            // console.log(data)
-            setHistory(data.history);
-            setUnweighted(data.unweighted)
-            setWeighted(data.weighted)
-            setRefreshing(false)
-        }).catch(setError)
+        getHistory().then(() => setRefreshing(false))
+
     }, []);
 
-    React.useEffect(() => {api.getHistory().then((data) => {
+    React.useEffect(() => {getHistory().then(() => {
         setLoading(false);
-
-        setHistory(data.history);
-        setUnweighted(data.unweighted);
-        setWeighted(data.weighted);
-    }).catch(setError)}, [])
+    })}, [])
 
 
-    const Header = () => {
+    const Gpa = () => {
+        const unweighted = historyRes?.data?.unweighted ;
+        const weighted = historyRes?.data?.weighted;
+
         return <View style={[styles.header, GlobalStyles.section]}>
             
             <Text style={[{fontSize: 35}, GlobalStyles.text]}>GPA</Text>
@@ -50,14 +54,6 @@ const Main = ({navigation}) => {
             <Text style={[GlobalStyles.secondaryText, {fontSize: 20}]}>
                 Unweighted: {unweighted?.substring(0,10)}
             </Text>
-            <Pressable onPress={() => {navigation.navigate('ReportCards')}}>
-                <View style={{marginTop: 10, borderColor: '#666666', borderWidth: 1, padding: 10}}>
-                    <Text style={[GlobalStyles.secondaryText, {fontSize: 25}]}>
-                        View Report Cards
-                    </Text> 
-                </View>
-            </Pressable>
-            
         </View>
     }
 
@@ -74,44 +70,28 @@ const Main = ({navigation}) => {
         ]}
 
     ]
-
     return <SafeAreaView style={GlobalStyles.container}>
-        {error && 
-			<Text style={{color: 'red'}}>
-                becca fucked up! screenshot this error and send it to her, please! {'\n'} {JSON.stringify(error)} 
-            </Text>
-		}
-        <SkeletonContent 
-            boneColor="#202022"
-			highlightColor="#444444"
-			containerStyle={{width: '100%', flex: 1}}
-            isLoading={loading}
-            layout={skeletons}
-        >
-            <FlatList
-                data={history}
-                renderItem={({item}) => <Year name={item.Grade} terms={item.Terms} />}
-                keyExtractor={(year) => year.Grade}
+        <ErrorHandler res={historyRes} getFunc={getHistory} attempts={attempts}/>
 
-                refreshing={refreshing}
-                onRefresh={onRefresh}
+            <SkeletonContent 
+                boneColor="#202022"
+                highlightColor="#444444"
+                containerStyle={{width: '100%', flex: 1}}
+                isLoading={loading}
+                layout={skeletons}
+            >        
+                <FlatList
+                    data={historyRes?.data?.history}
+                    renderItem={({item}) => <Year name={item.Grade} terms={item.Terms} />}
+                    keyExtractor={(year) => year.Grade}
 
-                ListHeaderComponent={Header}
-            />
-        </SkeletonContent>
+                    refreshing={refreshing}
+                    onRefresh={onRefresh}
+
+                    ListHeaderComponent={Gpa}
+                /> 
+            </SkeletonContent>
     </SafeAreaView>
-}
-
-const History = () => {
-    const Stack = createStackNavigator();
-
-	return <Stack.Navigator headerMode={'none'}>
-		<Stack.Screen component={Main} name='Main' options={{
-            headerShown: false
-        }} />
-		<Stack.Screen component={ReportCards} name={'ReportCards'}/>
-        <Stack.Screen component={DocView} name={'DocView'}/>
-	</Stack.Navigator>
 }
 
 
@@ -160,11 +140,9 @@ interface Document {
     StudentGU: string, 
 }
 
-const ReportCard = () => {
-    
-}
 
-const ReportCards = ({navigation}) => {
+
+const Documents = ({navigation}) => {
     const [docs, setDocs] = React.useState<Document[]>();
     const [error, setError] = React.useState();
     //ERROR HANDLING
@@ -223,14 +201,6 @@ const DocView = ({route, navigation}) => {
 const styles = StyleSheet.create({
     term: {
         padding: 15, 
-        // backgroundColor: '#292c30',
-        // backgroundColor: 'rgba(255, 255, 255, 0.05)',
-        // borderRadius: 20,
-        // margin: 10,
-        // shadowColor: 'black',
-        // shadowOpacity: 1,
-        // shadowRadius: 5,
-        // shadowOffset: {width: 0, height: 20}
     },
     grade: {
         flex: 1,
@@ -248,9 +218,16 @@ const styles = StyleSheet.create({
     skeletonBlock: {
         alignItems: 'center',
         flex: 1
+    },
+    pageLink: {
+        flex: 1,
+        flexDirection: 'row',
+        alignItems: 'center',
+        fontSize: 30,
+        padding: 10
     }
 
 
 })
-
-export default History;
+export {DocView, Documents}
+export default CourseHistory;
