@@ -14,6 +14,7 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import { NamesContext } from '../Homepage';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import _ from 'underscore';
 
 const ClassView = ({route, navigation}) => {
     const courseInfo = route.params;
@@ -21,34 +22,29 @@ const ClassView = ({route, navigation}) => {
     
 
     const ClassDetails = () => {
-        const [newName, setNewName] = React.useState<string>('');
-        const [editing, setEditing] = React.useState<boolean>(false);
+        const nickname = names && names[courseInfo.title]
+        const title = nickname || courseInfo.title;
+        const secondaryName = nickname ? courseInfo.title : '';
 
+        React.useEffect(() => {
+            navigation.setOptions({
+                title: title,
+                headerTransparent: false
+            })
+        }, [title])
+
+        const [newName, setNewName] = React.useState<string>(title);
+        const [editing, setEditing] = React.useState<boolean>(false);
 
         const saveNewName = () => {
             saveName(courseInfo.title, newName)
             setEditing(false)
         }
+        
+        const name = <Text style={[GlobalStyles.text, {fontSize: 25, marginRight: 10, flex: 1, flexWrap: 'wrap', flexDirection: 'row'}]}>
+            {title}
+        </Text>
 
-        // console.log(names);
-        const nickname = names && names[courseInfo.title]
-        const title = nickname || courseInfo.title;
-        const secondaryName = nickname ? courseInfo.title : '';
-
-        const renderName = () => {
-            return <>
-                <Text style={[GlobalStyles.text, {fontSize: 30, marginRight: 10, flex: 1, flexWrap: 'wrap', flexDirection: 'row'}]}>
-                    {title}
-                </Text>
-                <Icon 
-                    name='pencil' 
-                    size={30} 
-                    onPress={() => {setEditing(true)}} 
-                    color='rgb(10, 132, 255)'
-                />
-                
-            </>
-        }
 
         const editingName = <>
             <TextInput 
@@ -60,14 +56,24 @@ const ClassView = ({route, navigation}) => {
                 placeholderTextColor={GlobalStyles.secondaryText.color}
                 returnKeyType='done'
                 onBlur={() => {setEditing(false)}}
+                value={newName}
             />
-        	{/* <Button title='save' onPress={saveNewName}/> */}
         </>
 
         return <View style={[{marginBottom: 20, padding: 20}, GlobalStyles.section]}>
                 
             <View style={[ {flex: 1, justifyContent: 'space-between', flexDirection: 'row', maxWidth: '100%', }]}>
-                {editing? editingName : renderName()}
+                {editing? editingName : name}
+
+                <Icon 
+                    name={editing ? 'check' : 'pencil'} 
+                    size={30} 
+                    onPress={() => {
+                        editing ? saveNewName() : setEditing(true)
+                        
+                    }} 
+                    color='rgb(10, 132, 255)'
+                />
             </View>
 
             <Text style={[GlobalStyles.secondaryText, {fontSize: 15, marginBottom: 10}]}>
@@ -84,13 +90,14 @@ const ClassView = ({route, navigation}) => {
             </Text>
         </View>
     }
-//should do sort by most points
+//should do sort by most points and by category
 
 
 
 
     return <SafeAreaView style={[GlobalStyles.container ]}>
         <FlatList
+            keyboardShouldPersistTaps='handled'
             data={courseInfo.assignments}
             renderItem={({item}) => <Assignment assignment={item} />}
             keyExtractor={(item) => item.id}
@@ -101,8 +108,10 @@ const ClassView = ({route, navigation}) => {
 
 
 const Assignment = (props: {assignment}) => {
+    if (!props.assignment || _(props.assignment).any(a => !a))
+        return null
 
-    const points = props.assignment.points.split(' / ')
+    const points = props.assignment.points.split(' / ') 
 
     const pointsEarned = parseFloat(points[0]);
     const pointsPossible = parseFloat(points[1]);

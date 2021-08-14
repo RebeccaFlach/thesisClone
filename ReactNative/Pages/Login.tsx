@@ -14,6 +14,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as SecureStore from 'expo-secure-store';
 
 import _ from 'underscore';
+import Reusables from '../Reusables';
 
 const Login = () => {
     const [name, setName] = React.useState<string>();
@@ -147,7 +148,7 @@ const DistrictList = ({route, navigation}) => {
         setFilteredDistricts(filtered);
     }
 
-    const renderHeader = () => <Search filterFunc={filterDistricts}/>
+    const renderHeader = () => <Reusables.Search onChange={filterDistricts}/>
 
     const selectDistrict = (district:District) => {
         AsyncStorage.setItem('domain', district.PvueURL)

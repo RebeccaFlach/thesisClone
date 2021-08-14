@@ -12,6 +12,7 @@ import api from '../api';
 import SkeletonContent from 'react-native-skeleton-content';
 
 import ErrorHandler from '../ErrorHandler';
+import Reusables from '../Reusables';
 
 import linkify from 'linkifyjs/html';
 import {decode} from 'html-entities';
@@ -21,10 +22,17 @@ const Messages = () => {
     //api call to update read
     
     return <View style={GlobalStyles.container} >
-        <Stack.Navigator headerMode={'none'} >
-        <Stack.Screen component={Main} name='Messages' />
-        <Stack.Screen component={FullMessage} name={'FullMessage'}/>
-    </Stack.Navigator>
+        <Stack.Navigator>
+            <Stack.Screen component={Main} name='Messages' options={{
+                headerShown: false
+            }}/>
+            <Stack.Screen component={FullMessage} name={'FullMessage'}
+                options={{
+                    ...GlobalStyles.header,
+                    title: 'Message'
+                }}
+            />
+        </Stack.Navigator>
     </View>
 
 }
@@ -47,7 +55,6 @@ const Main = ({navigation}) => {
     React.useEffect(() => {	
 		getMessages().then(() => setLoading(false))
         // api.markRead()
-        // api.getStudentHealth();
 	}, []);
 
     const renderMessage = ({ item }) => {
@@ -80,11 +87,9 @@ const Main = ({navigation}) => {
 
     return <SafeAreaView  style={GlobalStyles.container}>
         <ErrorHandler res={res} attempts={attempts} getFunc={getMessages}/>
-        <SkeletonContent 
-            layout={Array(4).fill(messageSkeleton)}
-            isLoading={loading}
-            boneColor="#202022"
-			highlightColor="#444444"
+        <Reusables.SkeletonLoader
+            skeleton={Array(4).fill(messageSkeleton)}
+            loading={loading}
         >
             <FlatList
                 data={messages}
@@ -100,7 +105,7 @@ const Main = ({navigation}) => {
                      />
                   }
             />
-        </SkeletonContent>
+        </Reusables.SkeletonLoader>
 
     </SafeAreaView>
 }

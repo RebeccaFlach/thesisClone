@@ -17,6 +17,7 @@ import SkeletonContent from 'react-native-skeleton-content';
 
 import _ from 'underscore';
 
+import Reusables from './Reusables';
 
 import ErrorHandler from './ErrorHandler';
 
@@ -50,20 +51,22 @@ const Homepage = ({ navigation }) => {
 		AsyncStorage.setItem('classNicknames', JSON.stringify(newNames))
 	}
 
-	return <NamesContext.Provider value={[names, saveName]} >
-		<Stack.Navigator >
-			<Stack.Screen component={Main} name="Main"  options={{
-				// header: () => null
-				headerShown: false
-			}} />
-			<Stack.Screen component={ClassView} name={'ClassView'}
-				options={{
-					...GlobalStyles.header,
-					title: ''
-				}}
-			/>
-		</Stack.Navigator>
-	</NamesContext.Provider>
+	return <View style={{flex: 1, ...GlobalStyles.container}}>
+		<NamesContext.Provider value={[names, saveName]} >
+			<Stack.Navigator>
+				<Stack.Screen component={Main} name="Main"  options={{
+					headerShown: false
+				}} />
+				<Stack.Screen component={ClassView} name='ClassView'
+					options={{
+						...GlobalStyles.header,
+						title: '' //filled by each page
+					}}
+				/>
+			</Stack.Navigator>
+
+		</NamesContext.Provider>
+	</View>
 
 }
 
@@ -100,24 +103,19 @@ const Main = ({ navigation }) => {
 	}, []);
 
 	const courseSkeleton = {
-		...styles.courseSection, margin: 15, children: [
-			{key: 'letterGrade', width: 45, height: 45},
-			{key: 'title', height: 30, width: '50%'},
-			{key: 'numberGrade', height: 30, width: 40}
+		...styles.courseSection,  
+		children: [
+			{key: 'title', height: 60, width: '90%'},
 		]
 	}
 
-	const height = Dimensions.get("window").height;
+	const height = Dimensions.get("window").height - 60;
 
     return <SafeAreaView style={[GlobalStyles.container]} >
 		<ErrorHandler res={res} getFunc={getGrades} attempts={attempts}/>
-		<SkeletonContent
-			isLoading={loading}
-			boneColor="#202022"
-			highlightColor="#444444"
-			containerStyle={{width: '100%',}}
-			layout={Array(4).fill(courseSkeleton)}
-			
+		<Reusables.SkeletonLoader
+			loading={loading}
+			skeleton={Array(4).fill(courseSkeleton)}
 		>
 			<FlatList
 				data={grades}
@@ -135,7 +133,7 @@ const Main = ({ navigation }) => {
 				refreshing={refreshing}
 				onRefresh={onRefresh}
 			/>
-		</SkeletonContent>
+		</Reusables.SkeletonLoader>
 
     </SafeAreaView>
   	}
@@ -175,7 +173,7 @@ const Grade = (props) => {
 	//manually do max/min height bcs weird bug
 	let height = props.height
 	height = _([height, 120]).min()
-	height = _([height, 80 ]).max()
+	height = _([height, 90]).max()
 	
 
 	return <Pressable 
@@ -218,6 +216,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
 	padding: 20,
+
   },
   header: {
     height: '10%',

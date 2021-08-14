@@ -23,13 +23,8 @@ const Api = {
     },
 
     async request(method:string, params={}) {
-        // console.log('user ' +  this.user)
-        // console.log('pass ' + this.pass)
-        // console.log('domain ' + this.domain)
         if(!this.user)
             await this.login()
-            // &lt;Parms&gt;&lt;MessageListing xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema"           IconURL="images/PXP/TchComment_S.gif"    ID="31E9E442-7087-4DF3-AF2B-51B596D3F3E9"    BeginDate="08/07/2020 16:02:00"    Type="StudentActivity"    Deletable="true"    Read="true"    From="Sarah Stuart"    MarkAsRead="true"    &gt;&lt;/MessageListing&gt;&lt;/Parms&gt; 
-
 
         let paramStr = '&lt;Parms&gt;';
         Object.entries(params).forEach(([key, value]) => {
@@ -38,8 +33,6 @@ const Api = {
             paramStr += '&lt;/' + key + '&gt;';
         });
         paramStr += '&lt;/Parms&gt;';
-
-        //<key>value</key>
         
         if (method === 'UpdatePXPMessage'){
             paramStr = `&lt;Parms&gt;&lt;MessageListing xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema"          ID="31E9E442-7087-4DF3-AF2B-51B596D3F3E9"    Type="StudentActivity"  MarkAsRead="true"  
@@ -236,8 +229,30 @@ const Api = {
 
     async getStudentInfo() {
         const info = await this.parseData(this.request('StudentInfo'))
-        // console.log(info);
         return info.StudentInfo;
+    },
+
+    
+    async getSchedule() {
+        
+        let schedule = await this.parseData(this.request('StudentClassList'))
+        console.log(schedule)
+
+        schedule = schedule.StudentClassSchedule?.ClassLists?.ClassListing || [];
+
+        
+        schedule = _(schedule).map(course => {
+            const courseInfo = course._attributes
+            return {
+                title: courseInfo.CourseTitle,
+                period: courseInfo.Period,
+                room: courseInfo.RoomName,
+                teacher: courseInfo.Teacher,
+                teacherEmail: courseInfo.TeacherEmail
+            }
+        })
+
+        return {data: schedule, error: null};
     },
 
     async getStudentHealth() {

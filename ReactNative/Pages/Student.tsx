@@ -11,6 +11,8 @@ import SkeletonContent from 'react-native-skeleton-content';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import CourseHistory, {Documents, DocView} from './History';
+import Schedule from './Schedule';
+import School from './School';
 
 
 
@@ -25,15 +27,20 @@ const Main = ({navigation}) => {
                 setStudentInfo(data);
                 setStudentLoading(false)});
         }, [])
+
         const studentSkeletons = [
-            {flex: 1, flexDirection: "row", children: [
-                { ...styles.header, width: 100, height: 100, borderRadius: 100},
-                {  height: 40, width: 80, margin: 30}
-            ]
-        }
-    
+            {
+                flex: 1, flexDirection: "row", children: [
+                    { ...styles.header, width: 100, height: 100, borderRadius: 100},
+                    {  height: 40, width: 80, margin: 30}
+                ]
+            }
         ]
-        console.log(studentInfo)
+
+        const ProfilePic = () => <Image 
+            style={{width: 90, height: 90, borderRadius: 100, marginRight: 20}}
+            source={{uri: 'data:image/png;base64,' + studentInfo?.Photo._text}}
+        />
 
         return <View style={[GlobalStyles.section, styles.header, {height: 160}]}>
             <SkeletonContent 
@@ -44,12 +51,9 @@ const Main = ({navigation}) => {
                 layout={studentSkeletons}
             >
                 <View style={{flex: 1, flexDirection: 'row', alignItems: 'flex-start'}}>
-                    <Image 
-                        style={{width: 90, height: 90, borderRadius: 100, marginRight: 20}}
-                        source={{uri: 'data:image/png;base64,' + studentInfo?.Photo._text}}
-                    />
+                    <ProfilePic />
                     <View>
-                        <Text style={[GlobalStyles.text, {fontSize: 25, flex: 1}]}>
+                        <Text style={[GlobalStyles.text, {fontSize: 25, marginBottom: 10}]}>
                             {studentInfo?.FormattedName._text}
                         </Text>
                         <Text style={[GlobalStyles.secondaryText, {fontSize: 20, flex: 1}]}>
@@ -65,24 +69,35 @@ const Main = ({navigation}) => {
 
     const Links = () => {
 
-        const PageLink = (props: {title: string, icon: string, navTo: string}) => {
+        const PageLink = (props: {title: string, icon: string, navTo?: string}) => {
             return <Pressable 
-                onPress={() => navigation.navigate(props.navTo)} 
+                onPress={() => navigation.navigate(props.navTo || props.title)} 
                 style={[ {height: 70, padding: 10}, GlobalStyles.section]}
             >
                 <View style={{height: 90, flex: 1, flexDirection: 'row', alignItems: 'center'}}>
-                    <Icon name={props.icon} size={30} color={GlobalStyles.secondaryText.color}/>  
+
+                    <Icon 
+                        name={props.icon} 
+                        size={30} 
+                        color={GlobalStyles.secondaryText.color} 
+                        style={{opacity: 0.5}}
+                    />  
                     <Text style={[GlobalStyles.text, styles.pageLink]}>{props.title}</Text>
                 </View>
                 
             </Pressable>
         }
+        '&'
 
         return <View style={{}}>
 
             <PageLink title='Course History' icon='history' navTo='CourseHistory' />
+
             <PageLink title='Documents' icon='file' navTo='Documents' />
-            <PageLink title='Course History' icon='file' navTo='CourseHistory' />
+
+            {/* <PageLink title={'School & Staff'} icon='school' navTo='SchoolInfo' /> */}
+
+            <PageLink title='Schedule' icon='clock' />
            
         </View>
         //todo: student (more) info, school, schedule
@@ -123,20 +138,24 @@ const StudentInfo = () => {
                 title: 'Document'
             }}
         />
+        <Stack.Screen component={Schedule} name={'Schedule'}
+             options={{
+                ...GlobalStyles.header,
+              
+            }}
+        />
+         <Stack.Screen component={School} name={'SchoolInfo'}
+             options={{
+                ...GlobalStyles.header,
+              
+            }}
+        />
 	</Stack.Navigator>
 }
 
 const styles = StyleSheet.create({
     term: {
         padding: 15, 
-        // backgroundColor: '#292c30',
-        // backgroundColor: 'rgba(255, 255, 255, 0.05)',
-        // borderRadius: 20,
-        // margin: 10,
-        // shadowColor: 'black',
-        // shadowOpacity: 1,
-        // shadowRadius: 5,
-        // shadowOffset: {width: 0, height: 20}
     },
     grade: {
         flex: 1,
@@ -159,7 +178,7 @@ const styles = StyleSheet.create({
         flex: 1,
         flexDirection: 'row',
         alignItems: 'center',
-        fontSize: 20,
+        fontSize: 18,
         padding: 10
     }
 

@@ -58,7 +58,7 @@ const CourseHistory = () => {
     }
 
     const skeletons = [
-        {...styles.header, ...GlobalStyles.section, width: '100%', children: [
+        { ...styles.header, width: '100%', children: [
             {key: 'title', width: 80, height: 40, margin: 5},
             {key: 'text1', width: 200, height: 25, margin: 5},
             {key: 'text2', width: 200, height: 25, margin: 5},
