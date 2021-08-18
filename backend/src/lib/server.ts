@@ -100,7 +100,7 @@ app.use('/api/grade', gradeRouter.router);
 const start = () => {
 
   // var httpServer = http.createSserver(app);
-  var httpsServer = https.createServer(app);
+  var httpsServer = http.createServer(app);
 
   httpsServer.listen(PORT, () =>{
     console.log(`Listening on port: ${PORT}`)
