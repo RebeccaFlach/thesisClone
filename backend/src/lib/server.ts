@@ -102,7 +102,7 @@ const start = () => {
   // var httpServer = http.createSserver(app);
   var httpsServer = https.createServer(credentials, app);
 
-  httpsServer.listen(6001, () =>{
+  httpsServer.listen(process.env.PORT || 5000, () =>{
     console.log(`Listening on port: ${PORT}`)
   })
 }
