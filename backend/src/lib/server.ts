@@ -21,9 +21,9 @@ const PORT = process.env.PORT || 5001;
 app.use(bodyParser.json(),cors())
 
 
-  let privateKey =  fs.readFileSync('mren-na1-localhost.io.key');
-  let cert = fs.readFileSync('mren-na1-localhost.io.crt');
-  var credentials = {key: privateKey, cert: cert};
+  // let privateKey =  fs.readFileSync('mren-na1-localhost.io.key');
+  // let cert = fs.readFileSync('mren-na1-localhost.io.crt');
+  // var credentials = {key: privateKey, cert: cert};
 
 
 app.use(cors({
@@ -100,9 +100,9 @@ app.use('/api/grade', gradeRouter.router);
 const start = () => {
 
   // var httpServer = http.createSserver(app);
-  var httpsServer = https.createServer(credentials, app);
+  var httpsServer = https.createServer(app);
 
-  httpsServer.listen(process.env.PORT || 5000, () =>{
+  httpsServer.listen(PORT, () =>{
     console.log(`Listening on port: ${PORT}`)
   })
 }
