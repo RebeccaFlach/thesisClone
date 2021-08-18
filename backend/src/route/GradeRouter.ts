@@ -16,13 +16,13 @@ export default class GradeRouter {
         this.domain = 'https://student.tusd1.org';
         this.user = '1301246779';
         this.pass = '3.1415fuckyou';
-        
+        console.log('router')
         this.router = Router();
         
         this.request = (method:string, params={}) => {
             // if(!this.user)
             //     await this.login()
-           
+          
     
             let paramStr = '&lt;Parms&gt;';
             Object.entries(params).forEach(([key, value]) => {
@@ -88,6 +88,7 @@ export default class GradeRouter {
         
 
         this.router.route('/grades').get(async (req, res) => {
+            console.log('HIIIII')
             const gradebook = await this.request('Gradebook') as gradebook;
             const courses:any = gradebook?.Gradebook?.Courses?.Course || [];
                 
