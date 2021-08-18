@@ -6,7 +6,7 @@ import express from 'express';
 import TestRouter from '../route/TestRouter.js'
 import GradeRouter from '../route/GradeRouter.js'
 import bodyParser from 'body-parser';
-import StudentVue from 'studentvue.js'
+// import {login} from '../studentvue.js/index.js'
 import session from 'express-session';
 import _ from 'underscore';
 const app = express();
@@ -82,6 +82,19 @@ app.use('/api/grade', gradeRouter.router);
 
 //StudentVue.getDistrictUrls('85749').then(console.log);
 
+// login( 'https://student.tusd1.org', '1301246779', '3.1415fuckyou')
+// const method = 'GetPXPMessages';
+// const user = '1301246779';
+// const pass = '3.1415fuckyou'
+// axios.post('https://student.tusd1.org/Service/PXPCommunication.asmx', 
+//   `<?xml version="1.0" encoding="utf-8"?>\n<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"><soap:Body><ProcessWebServiceRequest xmlns="http://edupoint.com/webservices/"><userID>${user}</userID><password>${pass}</password><skipLoginLog>1</skipLoginLog><parent>0</parent><webServiceHandleName>PXPWebServices</webServiceHandleName><methodName>${method}</methodName><paramStr>&lt;Parms&gt;&lt;ChildIntID&gt;0&lt;/ChildIntID&gt;&lt;/Parms&gt;</paramStr></ProcessWebServiceRequest></soap:Body></soap:Envelope>`,
+//   {headers:{
+//       'Content-Type': 'text/xml; charset=utf-8',
+//       SOAPAction: 'http://edupoint.com/webservices/ProcessWebServiceRequest'
+//     }
+//   }, 
+// ).then((res) => {console.log(res.data)})
+// .catch((err) => {console.log(err.data)})
 
 
 const start = () => {
