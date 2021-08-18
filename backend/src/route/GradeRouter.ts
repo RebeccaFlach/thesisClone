@@ -3,8 +3,6 @@ import gradebook, {CourseEntity, Gradebook, GradeCalculationSummary} from '../mo
 import SVMessages from '../model/Messages';
 import axios, { AxiosResponse } from 'axios'
 import _ from 'underscore';
-import { AttendanceData } from '../model/Attendance';
-import parser, { toJson } from 'xml2json';
 import convert from 'xml-js';
 
 export default class GradeRouter {
@@ -15,7 +13,9 @@ export default class GradeRouter {
     user;
     pass;
     constructor(){
-        
+        this.domain = 'https://student.tusd1.org';
+        this.user = '1301246779';
+        this.pass = '3.1415fuckyou';
         
         this.router = Router();
         
