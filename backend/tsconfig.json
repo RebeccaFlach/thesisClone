@@ -9,6 +9,6 @@
     //   "checkJs": false
     },
     "include": ["src", "fuck.d.ts"],
-    "exclude": ["node_modules", "**/*.spec.ts"],
+    "exclude": ["node_modules", "**/*.spec.ts"]
     
   }
