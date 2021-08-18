@@ -28,6 +28,8 @@
     "mongoose": "^5.12.12",
     "studentvue.js": "^0.1.1",
     "superagent": "^6.1.0",
+    "ts-node": "^10.2.0",
+    "typescript": "^4.3.5",
     "underscore": "^1.13.1",
     "xml-js": "^1.6.11",
     "xml2json": "^0.12.0"
@@ -35,8 +37,6 @@
   "devDependencies": {
     "@tsconfig/recommended": "^1.0.1",
     "eslint": "^7.27.0",
-    "jest": "^27.0.3",
-    "ts-node": "^10.2.0",
-    "typescript": "^4.3.5"
+    "jest": "^27.0.3"
   }
 }
