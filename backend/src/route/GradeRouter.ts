@@ -228,7 +228,7 @@ export default class GradeRouter {
 
         this.router.route('/studentInfo').get(async (req, res) => {
             const svInfo = await this.request('StudentInfo');
-            return svInfo.StudentInfo;
+            res.json(svInfo.StudentInfo);
         })
 
         this.router.route('/ping').get((req, res) => {
