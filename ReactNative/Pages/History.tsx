@@ -2,7 +2,7 @@ import React from 'react';
 import { StyleSheet, Text, View, FlatList, Pressable, SafeAreaView, Image } from 'react-native';
 
 import GlobalStyles from '../GlobalStyles';
-import api from '../api'
+import api from '../frontendapi'
 
 import GradeYear, { GradedTerm, GradedCourse } from '../../backend/src/model/History';
 import { createStackNavigator } from '@react-navigation/stack';
@@ -144,10 +144,12 @@ interface Document {
 
 const Documents = ({navigation}) => {
     const [docs, setDocs] = React.useState<Document[]>();
-    const [error, setError] = React.useState();
+
     //ERROR HANDLING
 
-    React.useEffect(() => {api.getDocuments().then(setDocs).catch(setError)},[])
+    React.useEffect(() => {
+        api.getDocuments().then((res) => setDocs(res.data))}
+    ,[])
 
     return <SafeAreaView style={GlobalStyles.container}>
         <FlatList 
@@ -163,7 +165,7 @@ const Documents = ({navigation}) => {
             }, GlobalStyles.section]}
             ><Pressable onPress={() => {
                     api.getDoc(item.DocumentGU).then((doc) => {
-                        navigation.navigate('DocView', doc.Base64Code._text)
+                        navigation.navigate('DocView', doc.data.Base64Code._text)
                     }
                 )}  
             }

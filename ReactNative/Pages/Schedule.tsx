@@ -6,7 +6,7 @@ import GlobalStyles from '../GlobalStyles';
 
 
 import { createStackNavigator } from '@react-navigation/stack';
-import api from '../api';
+import api from '../frontendapi';
 import SkeletonContent from 'react-native-skeleton-content';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
@@ -41,7 +41,6 @@ const Schedule = () => {
     React.useEffect(() => {	
 		getSchedule()
         .then(() => setLoading(false))
-        api.markRead()
 	}, []);
 
     return <SafeAreaView style={GlobalStyles.container}>

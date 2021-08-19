@@ -8,7 +8,7 @@ import WebView from 'react-native-webview';
 import textVersion from 'textversionjs'
 
 import { createStackNavigator } from '@react-navigation/stack';
-import api from '../api';
+import api from '../frontendapi';
 import SkeletonContent from 'react-native-skeleton-content';
 
 import ErrorHandler from '../ErrorHandler';

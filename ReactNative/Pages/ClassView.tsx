@@ -6,7 +6,6 @@ import { StyleSheet, Text, View, Button, TextInput, FlatList, Pressable, SafeAre
 import GlobalStyles from '../GlobalStyles';
 import config from '../config';
 import { NavigationContainer } from '@react-navigation/native';
-import api from '../api';
 
 import {AssignmentEntity} from '../../backend/src/model/GradeBook'
 
@@ -108,10 +107,10 @@ const ClassView = ({route, navigation}) => {
 
 
 const Assignment = (props: {assignment}) => {
-    if (!props.assignment || _(props.assignment).any(a => !a))
+    if (!props.assignment || !props.assignment.points || !props.assignment.name)
         return null
 
-    const points = props.assignment.points.split(' / ') 
+    const points = props.assignment.points?.split(' / ');
 
     const pointsEarned = parseFloat(points[0]);
     const pointsPossible = parseFloat(points[1]);

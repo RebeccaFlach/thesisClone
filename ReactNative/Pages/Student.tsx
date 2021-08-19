@@ -6,14 +6,13 @@ import GlobalStyles from '../GlobalStyles';
 
 
 import { createStackNavigator } from '@react-navigation/stack';
-import api from '../api';
+import api from '../frontendapi';
 import SkeletonContent from 'react-native-skeleton-content';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import CourseHistory, {Documents, DocView} from './History';
 import Schedule from './Schedule';
 import School from './School';
-
 
 
 const Main = ({navigation}) => {
@@ -23,8 +22,10 @@ const Main = ({navigation}) => {
         const [studentInfo, setStudentInfo] = React.useState(null);
 
         React.useEffect(() => {
+
             api.getStudentInfo().then((data) => {
-                setStudentInfo(data);
+                console.log(data)
+                setStudentInfo(data.data);
                 setStudentLoading(false)});
         }, [])
 

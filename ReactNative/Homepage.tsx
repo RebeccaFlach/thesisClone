@@ -11,8 +11,6 @@ import GlobalStyles from './GlobalStyles';
 import {AssignmentEntity} from '../backend/src/model/GradeBook';
 
 import ClassView from './Pages/ClassView'
-
-import api from './api'
 import SkeletonContent from 'react-native-skeleton-content';
 
 import _ from 'underscore';
@@ -20,6 +18,8 @@ import _ from 'underscore';
 import Reusables from './Reusables';
 
 import ErrorHandler from './ErrorHandler';
+
+import api from './frontendapi';
 
 interface Grade {
   title: string,
