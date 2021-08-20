@@ -4,6 +4,9 @@ import SVMessages from '../model/Messages';
 import axios, { AxiosResponse } from 'axios'
 import _ from 'underscore';
 import convert from 'xml-js';
+import decoder from 'base-64';
+
+
 
 export default class GradeRouter {
     router;
@@ -89,7 +92,7 @@ export default class GradeRouter {
 
         this.router.route('/grades').get(async (req:Request, res) => {
             console.log('HIIIII')
-            console.log(req.headers.authorization)
+            console.log(decoder.decode(req.headers.authorization || ''))
             const gradebook = await this.request('Gradebook') as gradebook;
             const courses:any = gradebook?.Gradebook?.Courses?.Course || [];
                 
