@@ -49,10 +49,6 @@ app.use(cors({
 }))
 // app.use(auth);
 
-app.all('*', (request, response) => {
-  return response.sendStatus(404);
-});
-
 app.use(session({
   secret:'Keep it secret', 
   name:'sessionTest', 
