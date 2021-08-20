@@ -22,9 +22,18 @@ export default class GradeRouter {
         console.log('router')
         this.router = Router();
         
-        this.request = (method:string, params={}) => {
-            // if(!this.user)
-            //     await this.login()
+        this.request = (method:string, auth='', params={}) => {
+            let user;
+            let pass;
+            try {
+                const decodedAuth = decoder.decode(auth.split(' ')[1]);
+                const split = decodedAuth.split(':');
+                user = split[0];
+                pass = split[1];
+            }
+            catch {
+                return null;
+            }
           
     
             let paramStr = '&lt;Parms&gt;';
@@ -41,8 +50,8 @@ export default class GradeRouter {
                 <soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
                     <soap:Body>
                         <ProcessWebServiceRequest xmlns="http://edupoint.com/webservices/">
-                            <userID>${this.user}</userID>
-                            <password>${this.pass}</password>
+                            <userID>${user}</userID>
+                            <password>${pass}</password>
                             <skipLoginLog>1</skipLoginLog>
                             <parent>0</parent>
                             <webServiceHandleName>PXPWebServices</webServiceHandleName>
@@ -60,12 +69,6 @@ export default class GradeRouter {
             ).then(res => this.parseData(res))
         },
 
-        // this.parseData = (res) => {
-        //     const resData = JSON.parse(parser.toJson(res.data))
-
-        //     return JSON.parse(parser.toJson(resData['soap:Envelope']['soap:Body'].ProcessWebServiceRequestResponse.ProcessWebServiceRequestResult))
-        // }
-
         this.parseData = (res) => {
             const response = convert.xml2js(res.data, {compact: true});
 
@@ -81,7 +84,7 @@ export default class GradeRouter {
         //https://localhost:6001/api/grade/messages
 
         this.router.route('/messages').get(async (req, res) => {
-            const data = await this.request('GetPXPMessages') as SVMessages;
+            const data = await this.request('GetPXPMessages', req.headers.authorization) as SVMessages;
 
             const messages = data?.PXPMessagesData?.MessageListings?.MessageListing;
             //todo: transform data
@@ -92,8 +95,8 @@ export default class GradeRouter {
 
         this.router.route('/grades').get(async (req:Request, res) => {
             console.log('HIIIII')
-            console.log(decoder.decode(req.headers.authorization?.split(' ')[1] || ''))
-            const gradebook = await this.request('Gradebook') as gradebook;
+            
+            const gradebook = await this.request('Gradebook', req.headers.authorization) as gradebook;
             const courses:any = gradebook?.Gradebook?.Courses?.Course || [];
                 
                 const summary = courses.map((course) => {
@@ -141,7 +144,7 @@ export default class GradeRouter {
                     AssignmentID: 1
                 }
         
-                return this.request('GenerateAuthToken', params).then(data => data.AuthToken._attributes.EncyToken)
+                return this.request('GenerateAuthToken', req.headers.authorization, params).then(data => data.AuthToken._attributes.EncyToken)
             }
 
             const token = await getAuthToken();
@@ -191,7 +194,7 @@ export default class GradeRouter {
         })
 
         this.router.route('/documents').get(async (req, res) => {
-            const svDocuments = await this.request('GetStudentDocumentInitialData');
+            const svDocuments = await this.request('GetStudentDocumentInitialData', req.headers.authorization);
             const documents = svDocuments.StudentDocuments.StudentDocumentDatas.StudentDocumentData
             
             const formatted = documents.map(doc => doc._attributes);
@@ -204,7 +207,7 @@ export default class GradeRouter {
             // res.json(null)
             // return;
 
-            const svDocument = await this.request('GetContentOfAttachedDoc', { DocumentGU: req.params.docID});
+            const svDocument = await this.request('GetContentOfAttachedDoc', req.headers.authorization, { DocumentGU: req.params.docID});
             const doc = svDocument.StudentAttachedDocumentData.DocumentDatas.DocumentData
             
             
@@ -212,7 +215,7 @@ export default class GradeRouter {
         })
 
         this.router.route('/schedule').get(async (req, res) => {
-            const svSchedule = await this.request('StudentClassList');
+            const svSchedule = await this.request('StudentClassList', req.headers.authorization);
 
             const schedule = svSchedule.StudentClassSchedule?.ClassLists?.ClassListing || [];
 
@@ -232,7 +235,7 @@ export default class GradeRouter {
         })
 
         this.router.route('/studentInfo').get(async (req, res) => {
-            const svInfo = await this.request('StudentInfo');
+            const svInfo = await this.request('StudentInfo', req.headers.authorization);
             res.json(svInfo.StudentInfo);
         })
 
