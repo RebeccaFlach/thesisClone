@@ -1,5 +1,5 @@
-import React, { Children } from "react"
-import { TextInput, View } from "react-native"
+import React, { Children, ReactElement } from "react"
+import { FlatList, RefreshControl, Text, TextInput, View } from "react-native"
 import SkeletonContent from "react-native-skeleton-content"
 import { ICustomViewStyle } from "react-native-skeleton-content/lib/Constants"
 import GlobalStyles from "./GlobalStyles"
@@ -27,7 +27,38 @@ const Search = (props:{onChange: (text:string) => any }) => {
         />
     </View>
 }
+interface ListProps {
+    data: any[],
+    itemRenderer: ({item:any}) => any,
+    keyExtractor: (item:any) => string,
+    refreshing: boolean,
+    onRefresh: () => void,
+    ListHeaderComponent?: any
+}
+const List = (props: ListProps) => {
+    return <FlatList
+        data={props.data}
+        renderItem={props.itemRenderer}
+        keyExtractor={props.keyExtractor}
+        ListEmptyComponent={<Text style={GlobalStyles.text}>empty list</Text>}
+
+        ListHeaderComponent={props.ListHeaderComponent}
+        refreshControl={
+            <RefreshControl
+                refreshing={props.refreshing}
+                onRefresh={props.onRefresh}
+                tintColor="#fff"
+                title='Pull to refresh'
+                titleColor={GlobalStyles.secondaryText.color}
+            />
+        }
+    />
+}
+
+
+
 export default {
     SkeletonLoader: SkeletonLoader,
-    Search: Search
+    Search: Search,
+    List: List,
 }

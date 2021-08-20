@@ -13,6 +13,7 @@ import ErrorHandler from '../ErrorHandler';
 
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { ScrollView } from 'react-native-gesture-handler';
+import Reusables from '../Reusables';
 
 const CourseHistory = () => {
     const [historyRes, setHistoryRes] = React.useState(null);
@@ -80,9 +81,9 @@ const CourseHistory = () => {
                 isLoading={loading}
                 layout={skeletons}
             >        
-                <FlatList
+                <Reusables.List
                     data={historyRes?.data?.history}
-                    renderItem={({item}) => <Year name={item.Grade} terms={item.Terms} />}
+                    itemRenderer={({item}) => <Year name={item.Grade} terms={item.Terms} />}
                     keyExtractor={(year) => year.Grade}
 
                     refreshing={refreshing}

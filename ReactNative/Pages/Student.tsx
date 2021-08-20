@@ -24,7 +24,7 @@ const Main = ({navigation}) => {
         React.useEffect(() => {
 
             api.getStudentInfo().then((data) => {
-                console.log(data)
+                // console.log(data)
                 setStudentInfo(data.data);
                 setStudentLoading(false)});
         }, [])
@@ -117,41 +117,43 @@ const Main = ({navigation}) => {
 const StudentInfo = () => {
     const Stack = createStackNavigator();
 
-	return <Stack.Navigator>
-		<Stack.Screen component={Main} name='Main' options={{
-            headerShown: false
-        }} />
-		<Stack.Screen component={Documents} name={'Documents'}
-             options={{
-                ...GlobalStyles.header,
-                title: 'Documents'
-            }}
-        />
-        <Stack.Screen component={CourseHistory} name={'CourseHistory'}
-             options={{
-                ...GlobalStyles.header,
-                title: 'Course History'
-            }}
-        />
-        <Stack.Screen component={DocView} name={'DocView'}
-             options={{
-                ...GlobalStyles.header,
-                title: 'Document'
-            }}
-        />
-        <Stack.Screen component={Schedule} name={'Schedule'}
-             options={{
-                ...GlobalStyles.header,
-              
-            }}
-        />
-         <Stack.Screen component={School} name={'SchoolInfo'}
-             options={{
-                ...GlobalStyles.header,
-              
-            }}
-        />
-	</Stack.Navigator>
+	return <View style={{flex: 1, ...GlobalStyles.container}}>
+        <Stack.Navigator>
+            <Stack.Screen component={Main} name='Main' options={{
+                headerShown: false
+            }} />
+            <Stack.Screen component={Documents} name={'Documents'}
+                options={{
+                    ...GlobalStyles.header,
+                    title: 'Documents'
+                }}
+            />
+            <Stack.Screen component={CourseHistory} name={'CourseHistory'}
+                options={{
+                    ...GlobalStyles.header,
+                    title: 'Course History'
+                }}
+            />
+            <Stack.Screen component={DocView} name={'DocView'}
+                options={{
+                    ...GlobalStyles.header,
+                    title: 'Document'
+                }}
+            />
+            <Stack.Screen component={Schedule} name={'Schedule'}
+                options={{
+                    ...GlobalStyles.header,
+                
+                }}
+            />
+            <Stack.Screen component={School} name={'SchoolInfo'}
+                options={{
+                    ...GlobalStyles.header,
+                
+                }}
+            />
+        </Stack.Navigator>
+    </View>
 }
 
 const styles = StyleSheet.create({

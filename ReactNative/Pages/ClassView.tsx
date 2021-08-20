@@ -108,7 +108,7 @@ const ClassView = ({route, navigation}) => {
 
 const Assignment = (props: {assignment}) => {
     if (!props.assignment || !props.assignment.points || !props.assignment.name)
-        return null
+        return <View></View>
 
     const points = props.assignment.points?.split(' / ');
 

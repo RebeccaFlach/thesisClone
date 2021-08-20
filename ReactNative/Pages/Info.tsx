@@ -7,7 +7,7 @@ import api from '../api'
 const Info = () => {
 
 
-
+    
     /*
         
 

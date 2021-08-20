@@ -117,9 +117,9 @@ const Main = ({ navigation }) => {
 			loading={loading}
 			skeleton={Array(4).fill(courseSkeleton)}
 		>
-			<FlatList
+			<Reusables.List
 				data={grades}
-				renderItem={({item}) => <Grade
+				itemRenderer={({item}) => <Grade
 					nav={navigation}
 					info={item}
 					key={item.title}
@@ -128,7 +128,6 @@ const Main = ({ navigation }) => {
 				}
 
 				keyExtractor={(course) => course.title}
-				style={styles.gradeList}
 				
 				refreshing={refreshing}
 				onRefresh={onRefresh}
@@ -226,10 +225,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
   },
-  gradeList: {
-    padding: 0,
-	height: '100%'
-  }
 });
 
 export default Homepage;

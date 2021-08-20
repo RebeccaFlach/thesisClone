@@ -91,19 +91,12 @@ const Main = ({navigation}) => {
             skeleton={Array(4).fill(messageSkeleton)}
             loading={loading}
         >
-            <FlatList
+            <Reusables.List 
                 data={messages}
-                renderItem={renderMessage}
+                itemRenderer={renderMessage}
                 keyExtractor={(message) => message._attributes.ID}
-                ListEmptyComponent={<Text style={GlobalStyles.text}>empty list</Text>}
-                refreshControl={
-                    <RefreshControl
-                        refreshing={refreshing}
-                        onRefresh={onRefresh}
-                        tintColor="#fff"
-                        title=''
-                     />
-                  }
+                refreshing={refreshing}
+                onRefresh={onRefresh}
             />
         </Reusables.SkeletonLoader>
 
