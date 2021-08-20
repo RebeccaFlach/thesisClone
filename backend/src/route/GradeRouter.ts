@@ -198,13 +198,14 @@ export default class GradeRouter {
             res.json(formatted);
         })
 
-        this.router.route('/document:docID').get(async (req:Request, res) => {
-            console.log(req.params.docID)
+        this.router.route('/document').get(async (req:Request, res) => {
+            console.log(req.query.docID)
+           
            
             // res.json(null)
             // return;
 
-            const svDocument = await this.request('GetContentOfAttachedDoc', req.headers.authorization, { DocumentGU: req.params.docID});
+            const svDocument = await this.request('GetContentOfAttachedDoc', req.headers.authorization, { DocumentGU: req.query.docID});
             const doc = svDocument.StudentAttachedDocumentData.DocumentDatas.DocumentData
             
             
