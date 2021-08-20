@@ -17,9 +17,6 @@ export default class GradeRouter {
     pass;
     constructor(){
         this.domain = 'https://student.tusd1.org';
-        this.user = '1301246779';
-        this.pass = '3.1415fuckyou';
-        console.log('router')
         this.router = Router();
         
         this.request = (method:string, auth='', params={}) => {

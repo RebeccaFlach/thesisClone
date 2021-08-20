@@ -17,7 +17,7 @@ import {EnterZip, DistrictList} from './Pages/Login';
 
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import GlobalStyles from './GlobalStyles';
-import api from './api';
+import api from './frontendapi';
 import * as SecureStore from 'expo-secure-store';
 import StudentInfo from './Pages/Student';
 
@@ -28,6 +28,7 @@ export default function App() {
   	React.useEffect(() => {
 		api.login().then((user) => {
 			// setLoggedIn(false)
+			console.log('logging in')
 			if (!user)
 				setLoggedIn(false)
 			else
@@ -45,7 +46,7 @@ export default function App() {
 			const res = await api.checkLogin(name, pass);
 			if (res){
 				console.log('setting err')
-				console.log(JSON.stringify(res))
+				// console.log(JSON.stringify(res))
 				setError(JSON.stringify(res));
 			}
 			else {
