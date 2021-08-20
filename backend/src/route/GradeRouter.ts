@@ -1,4 +1,4 @@
-import { Router } from 'express';
+import { Request, Router } from 'express';
 import gradebook, {CourseEntity, Gradebook, GradeCalculationSummary} from '../model/GradeBook';
 import SVMessages from '../model/Messages';
 import axios, { AxiosResponse } from 'axios'
@@ -87,8 +87,9 @@ export default class GradeRouter {
         })
         
 
-        this.router.route('/grades').get(async (req, res) => {
+        this.router.route('/grades').get(async (req:Request, res) => {
             console.log('HIIIII')
+            console.log(req.headers.authorization)
             const gradebook = await this.request('Gradebook') as gradebook;
             const courses:any = gradebook?.Gradebook?.Courses?.Course || [];
                 
@@ -194,8 +195,9 @@ export default class GradeRouter {
             res.json(formatted);
         })
 
-        this.router.route('/document:docID').get(async (req, res) => {
+        this.router.route('/document:docID').get(async (req:Request, res) => {
             console.log(req.params.docID)
+           
             // res.json(null)
             // return;
 
