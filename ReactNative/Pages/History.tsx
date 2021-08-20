@@ -144,43 +144,86 @@ interface Document {
 
 
 const Documents = ({navigation}) => {
-    const [docs, setDocs] = React.useState<Document[]>();
+    const [res, setRes] = React.useState(null);
+    const [attempts, setAttempts] = React.useState<number>(0);
+    const [loading, setLoading] = React.useState<boolean>(true);
+    const [refreshing, setRefreshing] = React.useState<boolean>(false);
+    const docs = res?.data;
+   
+    const getDocuments = () => {
+		return api.getDocuments().then((res) => {
+			setRes(res);
 
-    //ERROR HANDLING
+			if (res.error)
+				setAttempts(attempts + 1)
+		})
+	}
 
     React.useEffect(() => {
-        api.getDocuments().then((res) => setDocs(res.data))}
-    ,[])
+        getDocuments().then(() => {
+            setLoading(false);
+        })
+    }, [])
+    
+    const refresh = () => {
+        setRefreshing(true);
+        getDocuments().then(() => {
+            setRefreshing(false);
+        })
+    }
 
-    return <SafeAreaView style={GlobalStyles.container}>
-        <FlatList 
-            data={docs}
-            renderItem={({item}) => <View
-            style={[{
-                // height: 50,
-                flex: 1, 
-                alignItems: 'center',
-                flexDirection: 'row',
-                padding: 10,
-                paddingLeft: 20
-            }, GlobalStyles.section]}
-            ><Pressable onPress={() => {
-                    api.getDoc(item.DocumentGU).then((doc) => {
-                        navigation.navigate('DocView', doc.data.Base64Code._text)
-                    }
-                )}  
+    const renderDoc = ({item}) => <View
+        style={[{
+            flex: 1, 
+            alignItems: 'center',
+            flexDirection: 'row',
+            padding: 10,
+            paddingLeft: 20
+        }, GlobalStyles.section]}
+    >
+        <Pressable
+            onPress={() => {
+                console.log('heelo')
+               
+                api.getDoc(item.DocumentGU).then((doc) => {
+                    console.log(doc);
+                    navigation.navigate('DocView', doc.data.Base64Code._text)
+                })}
             }
             style={{padding: 10}}
-            >
-                <Text style={[GlobalStyles.secondaryText, {fontSize: 20, flex: 1}]} numberOfLines={1}>
-                    {item.DocumentComment}
-                </Text>
-            </Pressable>
-            </View>
-            }
-            keyExtractor={(doc) => doc.DocumentGU}
-        
-        />
+        >
+
+        <Text style={[GlobalStyles.secondaryText, {fontSize: 20, flex: 1}]} numberOfLines={1}>
+            {item.DocumentComment}
+        </Text>
+
+        </Pressable>
+    </View>
+
+    const skeleton = {
+        height: 50,
+        margin: 10,
+        flex: 1,
+        width: '90%'
+           
+    }
+
+    return <SafeAreaView style={GlobalStyles.container}>
+        <ErrorHandler res={res} attempts={attempts} getFunc={getDocuments}/>
+        <Reusables.SkeletonLoader
+            loading={loading}
+            skeleton={Array(5).fill(skeleton)}
+        >
+
+            <Reusables.List
+                data={docs}
+                itemRenderer={renderDoc}
+                keyExtractor={(doc) => doc.DocumentGU}
+                refreshing={refreshing}
+                onRefresh={refresh}
+            
+            />
+        </Reusables.SkeletonLoader>
     </SafeAreaView>
 }
 
