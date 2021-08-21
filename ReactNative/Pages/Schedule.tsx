@@ -12,6 +12,7 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import CourseHistory, {Documents, DocView} from './History';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import Reusables from '../Reusables';
 
 
 interface ScheduleCourse {
@@ -37,6 +38,10 @@ const Schedule = () => {
 				setAttempts(attempts + 1)
 		})
     }
+    const onRefresh = () => {
+        setRefreshing(true);
+        getSchedule().then(() => setRefreshing(false))
+    }
 
     React.useEffect(() => {	
 		getSchedule()
@@ -44,11 +49,18 @@ const Schedule = () => {
 	}, []);
 
     return <SafeAreaView style={GlobalStyles.container}>
-        <FlatList
-            data={schedule}
-            renderItem={({item}) => <Course courseInfo={item} />}
-            keyExtractor={item => item.title}
-        />
+        <Reusables.SkeletonLoader
+            loading={loading}
+
+        >
+            <Reusables.List
+                data={schedule}
+                itemRenderer={({item}) => <Course courseInfo={item} />}
+                keyExtractor={item => item.title}
+                refreshing={refreshing}
+                onRefresh={onRefresh}
+            />
+        </Reusables.SkeletonLoader>
 
     </SafeAreaView>
 

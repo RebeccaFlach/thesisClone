@@ -17,8 +17,8 @@ const request  = async (method:string, params?) => {
         password: api.pass
     }
     
-    console.log('auth', auth)
-    return axios.get(url, {...params, auth: auth}).then((res) => {
+    // console.log('auth', auth)
+    return axios.get(url, {params: params, auth: auth}).then((res) => {
         //store data
         return {data: res.data, error: null};
 

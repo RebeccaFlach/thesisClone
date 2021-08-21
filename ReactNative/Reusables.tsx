@@ -5,8 +5,15 @@ import { ICustomViewStyle } from "react-native-skeleton-content/lib/Constants"
 import GlobalStyles from "./GlobalStyles"
 
 const SkeletonLoader = (props:{skeleton?:ICustomViewStyle[], loading: boolean, children?}) => {
+    const defaultSkeleton = {
+        height: 50,
+        margin: 10,
+        flex: 1,
+        width: '90%'
+           
+    }
     return <SkeletonContent 
-        layout={props.skeleton}
+        layout={props.skeleton || Array(5).fill(defaultSkeleton)}
         isLoading={props.loading}
         boneColor="#202022"
         highlightColor="#444444"

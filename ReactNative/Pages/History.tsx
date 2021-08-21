@@ -183,10 +183,7 @@ const Documents = ({navigation}) => {
     >
         <Pressable
             onPress={() => {
-                console.log('heelo')
-               
                 api.getDoc(item.DocumentGU).then((doc) => {
-                    console.log(doc);
                     navigation.navigate('DocView', doc.data.Base64Code._text)
                 })}
             }
@@ -200,19 +197,11 @@ const Documents = ({navigation}) => {
         </Pressable>
     </View>
 
-    const skeleton = {
-        height: 50,
-        margin: 10,
-        flex: 1,
-        width: '90%'
-           
-    }
-
+   
     return <SafeAreaView style={GlobalStyles.container}>
         <ErrorHandler res={res} attempts={attempts} getFunc={getDocuments}/>
         <Reusables.SkeletonLoader
             loading={loading}
-            skeleton={Array(5).fill(skeleton)}
         >
 
             <Reusables.List
