@@ -2,7 +2,11 @@ import AsyncStorage from "@react-native-async-storage/async-storage"
 import axios from "axios"
 import * as SecureStore from 'expo-secure-store';
 
+import {decode, encode} from 'base-64'
 
+if (!global.btoa) {  global.btoa = encode }
+
+if (!global.atob) { global.atob = decode }
 
 //requester
 const request  = async (method:string, params?) => {

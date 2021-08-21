@@ -25,17 +25,17 @@ export default function App() {
   const Tabs = createBottomTabNavigator();
   const [loggedIn, setLoggedIn] = React.useState(false)
 
-  	React.useEffect(() => {
-		api.login().then((user) => {
-			// setLoggedIn(false)
-			console.log('logging in')
-			if (!user)
-				setLoggedIn(false)
-			else
-				setLoggedIn(true);
-		})
+  	// React.useEffect(() => {
+	// 	api.login().then((user) => {
+	// 		// setLoggedIn(false)
+	// 		console.log('logging in')
+	// 		if (!user)
+	// 			setLoggedIn(false)
+	// 		else
+	// 			setLoggedIn(true);
+	// 	})
     
-	}, [])
+	// }, [])
 
 	const Login = () => {
 		const [name, setName] = React.useState<string>();
