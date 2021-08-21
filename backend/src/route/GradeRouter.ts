@@ -20,8 +20,8 @@ export default class GradeRouter {
         this.router = Router();
         
         this.request = (method:string, auth='', params={}) => {
-            let user;
-            let pass;
+            let user:string;
+            let pass:string;
             try {
                 const decodedAuth = decoder.decode(auth.split(' ')[1]);
                 const split = decodedAuth.split(':');
@@ -78,7 +78,6 @@ export default class GradeRouter {
 
             return data;
         }
-        //https://localhost:6001/api/grade/messages
 
         this.router.route('/messages').get(async (req, res) => {
             const data = await this.request('GetPXPMessages', req.headers.authorization) as SVMessages;
@@ -91,7 +90,6 @@ export default class GradeRouter {
         
 
         this.router.route('/grades').get(async (req:Request, res) => {
-            console.log('HIIIII')
             
             const gradebook = await this.request('Gradebook', req.headers.authorization) as gradebook;
             const courses:any = gradebook?.Gradebook?.Courses?.Course || [];
@@ -130,10 +128,11 @@ export default class GradeRouter {
         })
 
         this.router.route('/history').get(async(req, res) => {
+            const auth = req.headers.authorization;
 
             const getAuthToken = () => {
                 const params = {
-                    username: this.user,
+                    username: decoder.decode(auth.split(' ')[1]).split(':')[0],
                     TokenForClassWebsite: true,
                     Usertype: 0,
                     IsParentStudent: 0,
@@ -141,7 +140,7 @@ export default class GradeRouter {
                     AssignmentID: 1
                 }
         
-                return this.request('GenerateAuthToken', req.headers.authorization, params).then(data => data.AuthToken._attributes.EncyToken)
+                return this.request('GenerateAuthToken', auth, params).then(data => data.AuthToken._attributes.EncyToken)
             }
 
             const token = await getAuthToken();
