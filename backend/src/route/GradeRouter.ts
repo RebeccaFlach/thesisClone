@@ -64,6 +64,7 @@ export default class GradeRouter {
                     }
                 }, 
             ).then(res => this.parseData(res))
+            .catch(console.log)
         },
 
         this.parseData = (res) => {
@@ -91,9 +92,9 @@ export default class GradeRouter {
 
         this.router.route('/grades').get(async (req:Request, res) => {
             console.log('getting grades')
-            console.log(req.headers.authorization)
             
             const gradebook = await this.request('Gradebook', req.headers.authorization) as gradebook;
+            console.log(gradebook);
             const courses:any = gradebook?.Gradebook?.Courses?.Course || [];
                 
                 const summary = courses.map((course) => {
