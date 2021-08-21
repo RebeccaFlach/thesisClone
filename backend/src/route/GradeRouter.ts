@@ -40,6 +40,7 @@ export default class GradeRouter {
                 paramStr += '&lt;/' + key + '&gt;';
             });
             paramStr += '&lt;/Parms&gt;';
+            paramStr = paramStr.replace('&', '&amp;')
             
 
             return axios.post(`${this.domain}/Service/PXPCommunication.asmx`,
@@ -64,7 +65,12 @@ export default class GradeRouter {
                     }
                 }, 
             ).then(res => this.parseData(res))
-            .catch(console.log)
+            .catch(err => {
+                console.log('error code:');
+                console.log(err.status);
+                console.log(err.statusText)
+                console.log('---------------')
+            })
         },
 
         this.parseData = (res) => {
