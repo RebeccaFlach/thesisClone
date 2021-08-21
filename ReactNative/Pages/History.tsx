@@ -25,6 +25,7 @@ const CourseHistory = () => {
     const getHistory = () => {
         return api.getHistory().then((res:any) => {
             setHistoryRes(res);
+            console.log(res)
             
             if (res.error)
 				setAttempts(attempts + 1)
