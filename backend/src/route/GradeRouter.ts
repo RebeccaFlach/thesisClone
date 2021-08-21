@@ -32,15 +32,16 @@ export default class GradeRouter {
                 return null;
             }
           
-    
             let paramStr = '&lt;Parms&gt;';
             Object.entries(params).forEach(([key, value]) => {
+                let val = value as string;
+                val = val.replace('&', '&amp;')
                 paramStr += '&lt;' + key + '&gt;';
-                paramStr += value;
+                paramStr += val;
                 paramStr += '&lt;/' + key + '&gt;';
             });
             paramStr += '&lt;/Parms&gt;';
-            paramStr = paramStr.replace('&', '&amp;')
+            
             
 
             return axios.post(`${this.domain}/Service/PXPCommunication.asmx`,
