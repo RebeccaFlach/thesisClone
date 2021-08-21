@@ -25,8 +25,8 @@ export default class GradeRouter {
             try {
                 const decodedAuth = decoder.decode(auth.split(' ')[1]);
                 const split = decodedAuth.split(':');
-                user = split[0];
-                pass = split[1];
+                user = split[0].replace('&', '&amp;');
+                pass = split[1].replace('&', '&amp;');
             }
             catch {
                 return null;
@@ -68,8 +68,8 @@ export default class GradeRouter {
             ).then(res => this.parseData(res))
             .catch(err => {
                 console.log('error code:');
-                console.log(err.status);
-                console.log(err.statusText)
+                console.log(err.response.status);
+                console.log(err.respose.statusText)
                 console.log('---------------')
             })
         },
