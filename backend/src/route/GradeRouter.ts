@@ -90,6 +90,8 @@ export default class GradeRouter {
         
 
         this.router.route('/grades').get(async (req:Request, res) => {
+            console.log('getting grades')
+            console.log(req.headers.authorization)
             
             const gradebook = await this.request('Gradebook', req.headers.authorization) as gradebook;
             const courses:any = gradebook?.Gradebook?.Courses?.Course || [];
