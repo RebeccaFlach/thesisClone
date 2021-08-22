@@ -265,7 +265,7 @@ export default class GradeRouter {
                 res.json({message: 'Logged In Successfully'});
             })
             .catch(err => {
-                res.status(403).send(new Error(err))
+                res.status(403).send({message: err})
             })
         })
 
