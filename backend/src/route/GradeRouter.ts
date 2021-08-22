@@ -13,20 +13,39 @@ export default class GradeRouter {
     request;
     parseData;
     domain;
-    user;
-    pass;
+    getCredentials;
+    getAuthToken;
+
     constructor(){
         this.domain = 'https://student.tusd1.org';
         this.router = Router();
+
+        this.getCredentials = (auth) => {
+            const decodedAuth = decoder.decode(auth.split(' ')[1]);
+            const split = decodedAuth.split(':');
+            const user = split[0].replace('&', '&amp;');
+            const pass = split[1].replace('&', '&amp;');
+            return [user, pass];
+        }
+
+        this.getAuthToken = (auth) => {
+            const params = {
+                username: decoder.decode(auth.split(' ')[1]).split(':')[0],
+                TokenForClassWebsite: true,
+                Usertype: 0,
+                IsParentStudent: 0,
+                DocumentID: 1,
+                AssignmentID: 1
+            }
+    
+            return this.request('GenerateAuthToken', auth, params).then(data => data.AuthToken._attributes.EncyToken)
+        }
         
         this.request = (method:string, auth='', params={}) => {
             let user:string;
             let pass:string;
             try {
-                const decodedAuth = decoder.decode(auth.split(' ')[1]);
-                const split = decodedAuth.split(':');
-                user = split[0].replace('&', '&amp;');
-                pass = split[1].replace('&', '&amp;');
+                [user, pass] = this.getCredentials(auth);
             }
             catch {
                 return null;
@@ -140,20 +159,9 @@ export default class GradeRouter {
         this.router.route('/history').get(async(req, res) => {
             const auth = req.headers.authorization;
 
-            const getAuthToken = () => {
-                const params = {
-                    username: decoder.decode(auth.split(' ')[1]).split(':')[0],
-                    TokenForClassWebsite: true,
-                    Usertype: 0,
-                    IsParentStudent: 0,
-                    DocumentID: 1,
-                    AssignmentID: 1
-                }
-        
-                return this.request('GenerateAuthToken', auth, params).then(data => data.AuthToken._attributes.EncyToken)
-            }
+           
 
-            const token = await getAuthToken();
+            const token = await this.getAuthToken();
 
             let historyRes:AxiosResponse<any>;
             let data;
@@ -249,6 +257,15 @@ export default class GradeRouter {
         this.router.route('/ping').get((req, res) => {
             console.log('ping')
             res.json({message: 'pong!'})
+        })
+
+        this.router.route('/checkLogin').get(async (req, res) => {
+             return this.getAuthToken().then((res) => {
+                res.json({message: 'Logged In Successfully'});
+            })
+            .catch(err => {
+                res.status(403).send(new Error(err))
+            })
         })
 
 
