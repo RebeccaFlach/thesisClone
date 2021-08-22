@@ -23,11 +23,17 @@ import StudentInfo from './Pages/Student';
 
 export default function App() {
   const Tabs = createBottomTabNavigator();
-  const [loggedIn, setLoggedIn] = React.useState(false)
+  const [loggedIn, setLoggedIn] = React.useState(false);
+  
+  
+	const logout = () => {
+		setLoggedIn(false);
+	}
 
   	React.useEffect(() => {
 		api.login().then((user) => {
 			// setLoggedIn(false)
+			
 			console.log('logging in')
 			if (!user)
 				setLoggedIn(false)
@@ -40,16 +46,12 @@ export default function App() {
 	const Login = () => {
 		const [name, setName] = React.useState<string>();
 		const [pass, setPass] = React.useState<string>();
-		const [error, setError] = React.useState<string>();
+		const [error, setError] = React.useState<any>();
 	
 		const setInfo = async () => {
-			const res = await api.checkLogin(name, pass);
-			if (res){
-				console.log('setting err')
-				// console.log(JSON.stringify(res))
-				setError(JSON.stringify(res));
-			}
-			else {
+			const loginMessage = await api.checkLogin(name, pass);
+
+			if (loginMessage.data){
 				const passPromise = SecureStore.setItemAsync('password', pass);
 				const userPromise = SecureStore.setItemAsync('username', name);
 
@@ -57,6 +59,11 @@ export default function App() {
 				await api.login();
 				console.log('logged in!')
 				setLoggedIn(true);
+				
+			}
+			else {
+				
+				setError('Incorrect username or password.');
 			}
 			
 		}
@@ -69,7 +76,7 @@ export default function App() {
 					placeholder='Username'
 					placeholderTextColor='#b0b0b0'
 					onChangeText={setName} 
-					style={[styles.input]}
+					style={[GlobalStyles.input]}
 					autoCompleteType='username'
 					textContentType='username'
 				/>
@@ -78,7 +85,7 @@ export default function App() {
 					placeholder='Password'
 					placeholderTextColor='#b0b0b0'
 					onChangeText={setPass} 
-					style={[styles.input]}
+					style={[GlobalStyles.input]}
 					autoCompleteType='password'
 					textContentType='password'
 					secureTextEntry
@@ -93,75 +100,83 @@ export default function App() {
 	const SignUp = () => {
 		const Stack = createStackNavigator();
 	
-		return <Stack.Navigator headerMode='none'>
-			<Stack.Screen 
-				component={EnterZip}
-				name='EnterZip'
-			/>
-			<Stack.Screen
-				component={DistrictList}
-				name='DistrictList'
-			/>
-			<Stack.Screen
-				component={Login}
-				name='Login'
-			/>
-		</Stack.Navigator>
+		return <View style={{flex: 1, ...GlobalStyles.container}}>
+			<Stack.Navigator headerMode='none'>
+				<Stack.Screen 
+					component={EnterZip}
+					name='EnterZip'
+				/>
+				<Stack.Screen
+					component={DistrictList}
+					name='DistrictList'
+				/>
+				<Stack.Screen
+					component={Login}
+					name='Login'
+				/>
+			</Stack.Navigator>
+		</View>
 	}
 
 
-	return <NavigationContainer >
+	return <NavigationContainer>
     <StatusBar barStyle='light-content'></StatusBar>
-
 
     {!loggedIn 
 	? <SignUp />
 	:
-    <Tabs.Navigator 
-      tabBarOptions={{
-		labelPosition: 'below-icon',
-        style: {
-			backgroundColor: '#121219',
-			height: 50
-        }
-      }}
-	  
-    >
-
-		<Tabs.Screen name='Grades' component={Homepage} 
-
-			options={{
-				
-				
-			tabBarIcon: ({ color, size }) => (
-				<MaterialCommunityIcons name="home" color={color} size={size } />
-			),
-	
+		<Tabs.Navigator 
+			tabBarOptions={{
+				labelPosition: 'below-icon',
+				style: {
+					backgroundColor: '#121219',
+					height: 50
+				}
 			}}
-      	/>
-      
-		<Tabs.Screen name='Messages' component={Messages}
-			options={{
-				
-			tabBarIcon: ({ color, size }) => (
-				<MaterialCommunityIcons name="email" color={color} size={size} />
-			)
-			}}
+			screenOptions={({ route }) => ({
+				tabBarButton: 'LoggedOut' === route.name
+				? () => {
+					return null;
+					}
+				: undefined,
+			})}
+		>
+			<Tabs.Screen name='Grades' component={Homepage} 
+				options={{
+				tabBarIcon: ({ color, size }) => (
+					<MaterialCommunityIcons name="home" color={color} size={size } />
+				)}}
+			/>
 			
-		/>
+			<Tabs.Screen name='LoggedOut' component={SignUp} 
+				//this is a hacky way to make it go back to the login screen without setting loggedIn 
+				options={{
+					tabBarVisible: false
+				}}
+				
+			/>
+		
+			<Tabs.Screen name='Messages' component={Messages}
+				options={{
+					
+				tabBarIcon: ({ color, size }) => (
+					<MaterialCommunityIcons name="email" color={color} size={size} />
+				)
+				}}
+			/>
 
-		<Tabs.Screen name='Student Info' component={StudentInfo} 
-			options={{
-			tabBarIcon: ({ color, size }) => (
-				<MaterialCommunityIcons name='book-account' color={color} size={size} />
-			)
-			}}
-		/>
+			<Tabs.Screen name='Student Info' component={StudentInfo} 
+				options={{
+				tabBarIcon: ({ color, size }) => (
+					<MaterialCommunityIcons name='book-account' color={color} size={size} />
+				)
+				}}
+			/>
 
-      
+		
 
-    </Tabs.Navigator>
-}
+		</Tabs.Navigator>
+	}
   </NavigationContainer>
 
 }
@@ -180,6 +195,7 @@ const styles = StyleSheet.create({
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
+		marginTop: 30
     },
     listItem: {
         ...GlobalStyles.section,

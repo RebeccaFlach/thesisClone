@@ -86,10 +86,7 @@ const Main = ({ navigation }) => {
 			if (res.error)
 				setAttempts(attempts + 1)
 		})
-		
 	}
-
-
 
     React.useEffect(() => {	
 		getGrades().then(() => setLoading(false))

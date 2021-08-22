@@ -14,6 +14,10 @@ import CourseHistory, {Documents, DocView} from './History';
 import Schedule from './Schedule';
 import School from './School';
 
+import Dialog from 'react-native-dialog';
+import * as SecureStore from 'expo-secure-store';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 
 const Main = ({navigation}) => {
    
@@ -104,12 +108,42 @@ const Main = ({navigation}) => {
         //todo: student (more) info, school, schedule
     }
 
+    const Logout = () => {
+        const [showDialog, setShowDialog] = React.useState<boolean>(false);
+        const logout = () => {
+            setShowDialog(false);
+            SecureStore.deleteItemAsync('password');
+            SecureStore.deleteItemAsync('username');
+            AsyncStorage.clear();
+            navigation.navigate('LoggedOut')
+        }
+
+        return <View>
+            <View style={[GlobalStyles.section, {height: 60, flex: 1, justifyContent: 'center', marginTop: 20}]}>
+                <Button title='Logout' onPress={() => setShowDialog(true)}/>
+            </View>
+
+            <Dialog.Container visible={showDialog}>
+                <Dialog.Title>
+                    Log out
+                </Dialog.Title>
+                <Dialog.Description>
+                    Do you want to delete this account? This will delete all local data. 
+                </Dialog.Description>
+                <Dialog.Button label="Cancel" onPress={() => setShowDialog(false)}/>
+                <Dialog.Button label="Delete" onPress={logout}/>
+            </Dialog.Container>
+        </View>
+    }
+    
+
 
     return <SafeAreaView style={GlobalStyles.container}>
         {/* <ErrorHandler res={historyRes} getFunc={getHistory} attempts={attempts}/> */}
         <ScrollView>
             <Student />
             <Links />
+            <Logout />
         </ScrollView>
     </SafeAreaView>
 }

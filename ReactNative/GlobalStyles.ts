@@ -38,7 +38,9 @@ const GlobalStyles = {
         color: secondaryTextColor,
         borderBottomWidth: 1,
         borderBottomColor: borderColor,
-        margin: 30
+        margin: 30,
+        paddingLeft: 10,
+        paddingRight: 10
       
     },
 };

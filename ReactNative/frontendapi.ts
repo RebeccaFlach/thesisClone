@@ -8,7 +8,7 @@ import * as SecureStore from 'expo-secure-store';
 const request  = async (method:string, params?) => {
     if(!api.user)
         await api.login()
-    //request to backend
+
     let url = 'https://simplevue-backend.herokuapp.com/api/grade/';
     url += method;
     
@@ -33,9 +33,6 @@ const request  = async (method:string, params?) => {
    
 }
 
-
-//all methods (include handling parameters)
-//or just call request(blah ) from files?
 
 const api = {
     user: '',
@@ -65,7 +62,7 @@ const api = {
         this.user = user;
         this.pass = pass;
         
-        return Promise.resolve('')
+        return request('messages');
     },
 
     

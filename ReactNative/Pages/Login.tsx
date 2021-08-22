@@ -16,41 +16,7 @@ import * as SecureStore from 'expo-secure-store';
 import _ from 'underscore';
 import Reusables from '../Reusables';
 
-const Login = () => {
-    const [name, setName] = React.useState<string>();
-    const [pass, setPass] = React.useState<string>();
 
-    const setInfo = () => {
-        SecureStore.setItemAsync('password', pass)
-        SecureStore.setItemAsync('username', name)
-    }
-
-    return (<SafeAreaView style={GlobalStyles.container}>
-        
-        <KeyboardAvoidingView style={styles.login} >
-                <TextInput 
-                    placeholder='Username'
-                    placeholderTextColor='#b0b0b0'
-                    onChangeText={setName} 
-                    style={[styles.input]}
-                    autoCompleteType='username'
-                    textContentType='username'
-                />
-            
-                <TextInput 
-                    placeholder='Password'
-                    placeholderTextColor='#b0b0b0'
-                    onChangeText={setPass} 
-                    style={[styles.input]}
-                    autoCompleteType='password'
-                    textContentType='password'
-                />
-
-            <Button onPress={setInfo} title='login'/>
-        </KeyboardAvoidingView>
-    </SafeAreaView>
-  );
-}
 
 const styles = StyleSheet.create({
     input: {
@@ -86,6 +52,7 @@ interface District {
 
 const EnterZip = ({navigation}) => {
     const [zip, setZip] = React.useState<string>('');
+    const [error, setError] = React.useState<string>('');
 
 
     const getZip = (district) => {
@@ -94,6 +61,10 @@ const EnterZip = ({navigation}) => {
     }
 
     const getDistricts = () => {
+        if (zip.length !== 5){
+            setError('Please enter a valid zipcode');
+            return;
+        }
         api.getDistricts(zip).then((data) => {
             data.sort((a, b) => Math.abs(getZip(a) - parseInt(zip)) - Math.abs(getZip(b) - parseInt(zip)));
 
@@ -106,15 +77,18 @@ const EnterZip = ({navigation}) => {
     return <SafeAreaView style={[GlobalStyles.container, ]} >
 
         <KeyboardAvoidingView 
-            style={{ marginBottom: 50, flex: 1, justifyContent: 'center', alignItems: 'center'}} 
-            behavior={Platform.OS === "ios" ? "position" : "height"}
-            keyboardVerticalOffset={30}
+            style={{ flex: 1, justifyContent: 'center', alignItems: 'center'}} 
+            behavior={"height"}
         >
+            <Text style={{color: '#c21f13', fontSize: 15}}>{error}</Text>
             <TextInput 
                 placeholder='Enter your zipcode'
                 placeholderTextColor='#b0b0b0'
                 onChangeText={setZip} 
-                style={[styles.input, GlobalStyles.text, ]}
+                style={[GlobalStyles.input, {width: 200}]}
+                returnKeyLabel='Enter'
+                returnKeyType='go'
+                onSubmitEditing={getDistricts}
             />
 
             <Button title='Find District' onPress={getDistricts} />
@@ -122,18 +96,6 @@ const EnterZip = ({navigation}) => {
         </KeyboardAvoidingView>
     </SafeAreaView>
 
-}
-
-
-const Search = (props) => {
-    return <View>
-        <TextInput 
-            style={styles.input} 
-            onChangeText={props.filterFunc}
-            placeholder='Search districts'
-            placeholderTextColor='#b0b0b0'
-        />
-    </View>
 }
 
 
@@ -182,13 +144,8 @@ const SignUp = () => {
             component={DistrictList}
             name='DistrictList'
         />
-        <Stack.Screen
-            component={Login}
-            name='Login'
-        />
     </Stack.Navigator>
 }
 
-export default SignUp;
 
 export {EnterZip, DistrictList}

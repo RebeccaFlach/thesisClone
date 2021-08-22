@@ -112,22 +112,20 @@ const Message = (props) => {
     preview = decode(preview)
  
 
-    React.useEffect(() => {
-        if (props.attachments && props.attachments[0]){
-            const fileInfo = props.attachments[0]._attributes.SmAttachmentGU;
-            console.log(fileInfo)
+    // React.useEffect(() => {
+    //     if (props.attachments && props.attachments[0]){
+    //         const fileInfo = props.attachments[0]._attributes.SmAttachmentGU;
+    //         console.log(fileInfo)
+    //     }
+    // }, [])
 
-            
-        }
 
-
-    }, [])
     return <Pressable 
         onPress={() => {
             props.nav.navigate('FullMessage', 
             {subject: props.subject, content: props.content, from: props.from, date: props.date}
-            )}
-        } >
+        )}
+    }>
         <View style={[styles.message, GlobalStyles.section]}>
             <Text style={[GlobalStyles.text]}>
                 <Text style={[{fontSize: 12}, GlobalStyles.secondaryText]}>{ props.from }</Text> {'\n'}
@@ -141,9 +139,9 @@ const Message = (props) => {
 
 const FullMessage = ({route, navigation}) => {
     const [webviewLoaded, setWebviewLoaded] = React.useState<boolean>(false);
-
     const message = route.params;
 
+    //yes this is horrible, no I don't know another way to do it
     const style = `
         <style>
             html {
@@ -169,7 +167,7 @@ const FullMessage = ({route, navigation}) => {
     `;
 
     let content = message.content.replace(/style=".*"/gm, '') //remove styles because tusd is committed to eyesores
-    content = linkify(content)
+    content = linkify(content); //turn links into <a> clickable links
 
     return <SafeAreaView style={GlobalStyles.container}>
         <WebView
