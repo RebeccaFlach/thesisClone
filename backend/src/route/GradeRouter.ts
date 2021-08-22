@@ -260,7 +260,7 @@ export default class GradeRouter {
         })
 
         this.router.route('/checkLogin').get(async (req, res) => {
-             return this.getAuthToken().then((res) => {
+             return this.getAuthToken(req.headers.authorization).then((res) => {
                 res.json({message: 'Logged In Successfully'});
             })
             .catch(err => {
