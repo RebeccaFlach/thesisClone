@@ -53,8 +53,9 @@ export default class GradeRouter {
           
             let paramStr = '&lt;Parms&gt;';
             Object.entries(params).forEach(([key, value]) => {
-                let val = value as string;
-                val = val.replace('&', '&amp;')
+                let val = value as any;
+                if (typeof val === 'string')
+                    val = val.replace('&', '&amp;')
                 paramStr += '&lt;' + key + '&gt;';
                 paramStr += val;
                 paramStr += '&lt;/' + key + '&gt;';
