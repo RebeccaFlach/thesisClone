@@ -41,7 +41,7 @@ export default class GradeRouter {
             return this.request('GenerateAuthToken', auth, params).then(data => data.AuthToken._attributes.EncyToken)
         }
         
-        this.request = (method:string, auth='', params={}) => {
+        this.request = (method:string, auth:string, params={}) => {
             let user:string;
             let pass:string;
             try {
@@ -160,9 +160,7 @@ export default class GradeRouter {
         this.router.route('/history').get(async(req, res) => {
             const auth = req.headers.authorization;
 
-           
-
-            const token = await this.getAuthToken();
+            const token = await this.getAuthToken(auth);
 
             let historyRes:AxiosResponse<any>;
             let data;
