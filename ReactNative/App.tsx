@@ -21,27 +21,36 @@ import api from './frontendapi';
 import * as SecureStore from 'expo-secure-store';
 import StudentInfo from './Pages/Student';
 
+import * as SplashScreen from 'expo-splash-screen';
+
 export default function App() {
   const Tabs = createBottomTabNavigator();
   const [loggedIn, setLoggedIn] = React.useState(false);
-  
-  
-	const logout = () => {
-		setLoggedIn(false);
-	}
+  const [appIsReady, setAppIsReady] = React.useState(false);
 
   	React.useEffect(() => {
+		SplashScreen.preventAutoHideAsync();
 		api.login().then((user) => {
-			// setLoggedIn(false)
-			
-			console.log('logging in')
 			if (!user)
 				setLoggedIn(false)
 			else
 				setLoggedIn(true);
+
+			new Promise(resolve => setTimeout(resolve, 1000))
+				.then(() => setAppIsReady(true))
 		})
     
 	}, [])
+
+	const onLayoutRootView = React.useCallback(async () => {
+		if (appIsReady) {
+		  await SplashScreen.hideAsync();
+		}
+	  }, [appIsReady]);
+	
+	  if (!appIsReady) {
+		return null;
+	  }
 
 	const Login = () => {
 		const [name, setName] = React.useState<string>();
@@ -119,12 +128,15 @@ export default function App() {
 	}
 
 
-	return <NavigationContainer>
+	return <NavigationContainer >
     <StatusBar barStyle='light-content'></StatusBar>
 
     {!loggedIn 
 	? <SignUp />
-	:
+	: <View 
+		onLayout={onLayoutRootView}
+		style={{flex: 1}}
+	>
 		<Tabs.Navigator 
 			tabBarOptions={{
 				labelPosition: 'below-icon',
@@ -176,7 +188,7 @@ export default function App() {
 		
 
 		</Tabs.Navigator>
-	}
+	</View>}
   </NavigationContainer>
 
 }
