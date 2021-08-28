@@ -115,10 +115,13 @@ const Assignment = (props: {assignment}) => {
     const pointsEarned = parseFloat(points[0]);
     const pointsPossible = parseFloat(points[1]);
 
-    //parsing removes trailing 0s
-    let writtenScore = parseFloat(pointsEarned.toFixed(1)) + ' / ' + parseFloat(pointsPossible.toFixed(1));
-    if (isNaN(pointsEarned) || isNaN(pointsPossible))
-        writtenScore = props.assignment.points
+    // 2 digit decimals
+    // 2021.08.26 JU - possible bug if, in the if statement, isNaN(pointsPossible) is true
+    let writtenScore = pointsEarned.toFixed(2) + ' / ' + pointsPossible.toFixed(2);
+    if (isNaN(pointsEarned) || isNaN(pointsPossible)) {
+        let potentialPoints = parseFloat(props.assignment.points.split(' ')[0]);
+        writtenScore = potentialPoints.toFixed(2) + " Points Possible";
+    }
 
     let score = parseFloat(((pointsEarned / pointsPossible) * 100).toFixed(1)) as any;
     if (pointsPossible === 0 && pointsEarned > 0)
