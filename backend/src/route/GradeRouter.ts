@@ -38,7 +38,7 @@ export default class GradeRouter {
                 AssignmentID: 1
             }
     
-            return this.request('GenerateAuthToken', auth, params).then(data => data.AuthToken._attributes.EncyToken)
+            return this.request('GenerateAuthToken', auth, params).then(data => data.AuthToken._attributes.EncyToken).catch(err => Promise.reject(err))
         }
         
         this.request = (method:string, auth:string, params={}) => {
@@ -263,6 +263,7 @@ export default class GradeRouter {
                 res.json({message: 'Logged In Successfully'});
             })
             .catch(err => {
+                console.log('WAS ERROR:')
                 console.log(err)
                 res.status(403).send({message: err})
             })
