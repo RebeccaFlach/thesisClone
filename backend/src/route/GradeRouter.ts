@@ -86,6 +86,10 @@ export default class GradeRouter {
                     }
                 }, 
             ).then(res => this.parseData(res))
+            .catch(err => {
+                console.log(err)
+                return Promise.reject(err);
+            })
             // .catch(err => {
             //     console.log('error code:');
             //     console.log(err);
@@ -116,6 +120,7 @@ export default class GradeRouter {
                 res.json(messages);
             }
             catch {
+
                 res.json(null)
             }
 
