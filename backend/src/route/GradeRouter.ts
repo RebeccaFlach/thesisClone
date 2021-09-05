@@ -108,12 +108,18 @@ export default class GradeRouter {
         }
 
         this.router.route('/messages').get(async (req, res) => {
-            const data = await this.request('GetPXPMessages', req.headers.authorization) as SVMessages;
+            try {
+                const data = await this.request('GetPXPMessages', req.headers.authorization) as SVMessages;
+                const messages = data?.PXPMessagesData?.MessageListings?.MessageListing;
+                //todo: transform data
+                   
+                res.json(messages);
+            }
+            catch {
+                res.json(null)
+            }
 
-            const messages = data?.PXPMessagesData?.MessageListings?.MessageListing;
-            //todo: transform data
-               
-            res.json(messages);
+           
         })
         
 
