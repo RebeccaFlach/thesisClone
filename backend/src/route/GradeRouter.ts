@@ -86,12 +86,12 @@ export default class GradeRouter {
                     }
                 }, 
             ).then(res => this.parseData(res))
-            .catch(err => {
-                console.log('error code:');
-                console.log(err.response.status);
-                console.log(err.respose.statusText)
-                console.log('---------------')
-            })
+            // .catch(err => {
+            //     console.log('error code:');
+            //     console.log(err);
+
+            //     console.log('---------------')
+            // })
         },
 
         this.parseData = (res) => {
@@ -263,6 +263,7 @@ export default class GradeRouter {
                 res.json({message: 'Logged In Successfully'});
             })
             .catch(err => {
+                console.log(err)
                 res.status(403).send({message: err})
             })
         })
