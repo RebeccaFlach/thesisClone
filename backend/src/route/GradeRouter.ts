@@ -22,9 +22,10 @@ export default class GradeRouter {
 
         this.getCredentials = (auth) => {
             const decodedAuth = decoder.decode(auth.split(' ')[1]);
-            const split = decodedAuth.split(':');
-            const user = split[0].replace('&', '&amp;');
-            const pass = split[1].replace('&', '&amp;');
+            
+            let i = decodedAuth.indexOf(':');
+            const user = decodedAuth.slice(0, i).replace('&', '&amp;');
+            const pass = decodedAuth.slice(i + 1).replace('&', '&amp;');
             return [user, pass];
         }
 
