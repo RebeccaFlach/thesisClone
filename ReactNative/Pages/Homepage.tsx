@@ -6,20 +6,20 @@ import { StyleSheet, Text, View, Button, TextInput, FlatList, Pressable, SafeAre
 import { createStackNavigator } from '@react-navigation/stack';
 import AsyncStorage, { useAsyncStorage } from '@react-native-async-storage/async-storage';
 
-import GlobalStyles from './GlobalStyles';
+import GlobalStyles from '../GlobalStyles';
 
-import {AssignmentEntity} from '../backend/src/model/GradeBook';
+import {AssignmentEntity} from '../../backend/src/model/GradeBook';
 
-import ClassView from './Pages/ClassView'
+import ClassView from './ClassView'
 import SkeletonContent from 'react-native-skeleton-content';
 
 import _ from 'underscore';
 
-import Reusables from './Reusables';
+import Reusables from '../Reusables';
 
-import ErrorHandler from './ErrorHandler';
+import ErrorHandler from '../ErrorHandler';
 
-import api from './frontendapi';
+import api from '../frontendapi';
 
 interface Grade {
   title: string,

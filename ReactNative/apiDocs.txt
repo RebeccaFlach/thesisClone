@@ -1,0 +1,180 @@
+getting health:
+
+request
+
+    POST /Service/PXPCommunication.asmx HTTP/1.1
+    Host: student.tusd1.org
+    Accept: */*
+    Content-Type: text/xml; charset=utf-8
+    SOAPAction: http://edupoint.com/webservices/ProcessWebServiceRequestMultiWeb
+    Connection: keep-alive
+    Cookie: MOBILE_REQUEST_CORE_PAGE=Y; PVUE=00; AppSupportsSession=1; ASP.NET_SessionId=gcu0i0b53cesmlomnqzgi5pr; TUSDSISLB=889065644.20480.0000; edupointkey=1; MSFPC=GUID=9ad696cf7c4d4bd5b96010c6efb6d020&HASH=9ad6&LV=202008&V=4&LU=1597075655946; MUID=3C512CD1AF3B658A27E723F3AEA2648A
+    Accept-Language: en-us
+    Content-Length: 840
+    Accept-Encoding: gzip, deflate, br
+    User-Agent: StudentVUE/9.1.8 CFNetwork/1220.1 Darwin/20.3.0
+
+    <?xml version="1.0" encoding="utf-8"?>
+    <soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"><soap:Body><ProcessWebServiceRequestMultiWeb xmlns="http://edupoint.com/webservices/"><userID>1301246779</userID><password>3.1415fuckyou</password><skipLoginLog>1</skipLoginLog><parent>0</parent><webDBName></webDBName><webServiceHandleName>PXPWebServices</webServiceHandleName><methodName>StudentHealthInfo</methodName><paramStr>&lt;Parms&gt;&lt;ChildIntID&gt;0&lt;/ChildIntID&gt; &lt;HealthConditions&gt;false&lt;/HealthConditions&gt; &lt;HealthVisits&gt;false&lt;/HealthVisits&gt; &lt;HealthImmunizations&gt;true&lt;/HealthImmunizations&gt; &lt;/Parms&gt;</paramStr></ProcessWebServiceRequestMultiWeb></soap:Body></soap:Envelope>
+
+response
+
+    <?xml version="1.0" encoding="utf-8"?><soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema"><soap:Body><ProcessWebServiceRequestMultiWebResponse xmlns="http://edupoint.com/webservices/"><ProcessWebServiceRequestMultiWebResult>&lt;StudentHealthData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"&gt;
+     &lt;HealthVisitListings /&gt;
+     &lt;HealthConditionsListings /&gt;
+     &lt;HealthImmunizationListings&gt;
+          &lt;HealthImmunizationListing AccessGU="30D3E491-8603-4B69-B624-DACD6AF09287" Compliant="true" CompliantMessage="Personal Beliefs" Name="Hep B3" NumReqDoses="5"&gt;
+               &lt;ImmunizationDatesData /&gt;
+          &lt;/HealthImmunizationListing&gt;
+          &lt;HealthImmunizationListing AccessGU="F3C332F7-114D-471A-8E3B-82BAA386CD1F" Compliant="true" CompliantMessage="Compliant" Name="Dtap Series" NumReqDoses="6"&gt;
+               &lt;ImmunizationDatesData&gt;
+                    &lt;ImmunizationDate ImmunizationDt="10/06/2004" /&gt;
+                    &lt;ImmunizationDate ImmunizationDt="12/08/2004" /&gt;
+                    &lt;ImmunizationDate ImmunizationDt="02/14/2005" /&gt;
+                    &lt;ImmunizationDate ImmunizationDt="08/18/2005" /&gt;
+                    &lt;ImmunizationDate ImmunizationDt="07/23/2009" /&gt;
+               &lt;/ImmunizationDatesData&gt;
+          &lt;/HealthImmunizationListing&gt;
+          &lt;HealthImmunizationListing AccessGU="5976EF53-A314-4006-A50A-EBC532E6E4A8" Compliant="true" CompliantMessage="Not Required" Name="Hib" NumReqDoses="4"&gt;
+               &lt;ImmunizationDatesData /&gt;
+          &lt;/HealthImmunizationListing&gt;
+          &lt;HealthImmunizationListing AccessGU="45C8D0C5-657D-484D-91A2-6F928FD20C71" Compliant="true" CompliantMessage="Compliant" Name="Polio" NumReqDoses="7"&gt;
+               &lt;ImmunizationDatesData&gt;
+                    &lt;ImmunizationDate ImmunizationDt="10/06/2004" /&gt;
+                    &lt;ImmunizationDate ImmunizationDt="12/08/2004" /&gt;
+                    &lt;ImmunizationDate ImmunizationDt="05/11/2005" /&gt;
+                    &lt;ImmunizationDate ImmunizationDt="07/23/2009" /&gt;
+               &lt;/ImmunizationDatesData&gt;
+          &lt;/HealthImmunizationListing&gt;
+          &lt;HealthImmunizationListing AccessGU="A6B1F912-24B1-42F8-859C-A61AD5FE7E6E" Compliant="true" CompliantMessage="Compliant" Name="MMR" NumReqDoses="3"&gt;
+               &lt;ImmunizationDatesData&gt;
+                    &lt;ImmunizationDate ImmunizationDt="08/18/2005" /&gt;
+                    &lt;ImmunizationDate ImmunizationDt="08/27/2008" /&gt;
+               &lt;/ImmunizationDatesData&gt;
+          &lt;/HealthImmunizationListing&gt;
+          &lt;HealthImmunizationListing AccessGU="EF870E58-70E3-4948-A257-97FC5A5FFB50" Compliant="true" CompliantMessage="Compliant" Name="Varicella" NumReqDoses="2"&gt;
+               &lt;ImmunizationDatesData&gt;
+                    &lt;ImmunizationDate ImmunizationDt="08/05/2011" /&gt;
+                    &lt;ImmunizationDate ImmunizationDt="07/03/2013" /&gt;
+               &lt;/ImmunizationDatesData&gt;
+          &lt;/HealthImmunizationListing&gt;
+          &lt;HealthImmunizationListing AccessGU="2C960BA6-52DC-4309-9A61-42513229FCEE" Compliant="true" CompliantMessage="Not Required" Name="Varicella 13+" NumReqDoses="2"&gt;
+               &lt;ImmunizationDatesData /&gt;
+          &lt;/HealthImmunizationListing&gt;
+          &lt;HealthImmunizationListing AccessGU="C4E56061-F670-4B64-80D1-6732D4E39740" Compliant="true" CompliantMessage="Not Required" Name="Hep A" NumReqDoses="3"&gt;
+               &lt;ImmunizationDatesData&gt;
+                    &lt;ImmunizationDate ImmunizationDt="08/17/2007" /&gt;
+                    &lt;ImmunizationDate ImmunizationDt="08/27/2009" /&gt;
+               &lt;/ImmunizationDatesData&gt;
+          &lt;/HealthImmunizationListing&gt;
+          &lt;HealthImmunizationListing AccessGU="DB014C9B-7E65-4700-A420-95354E36392C" Compliant="false" CompliantMessage="Not Required" Name="Td only" NumReqDoses="3"&gt;
+               &lt;ImmunizationDatesData /&gt;
+          &lt;/HealthImmunizationListing&gt;
+          &lt;HealthImmunizationListing AccessGU="3F2D6C02-0B8F-43E1-AA08-73D98DD4086D" Compliant="true" CompliantMessage="Compliant" Name="Tdap Booster" NumReqDoses="2"&gt;
+               &lt;ImmunizationDatesData&gt;
+                    &lt;ImmunizationDate ImmunizationDt="02/08/2016" /&gt;
+               &lt;/ImmunizationDatesData&gt;
+          &lt;/HealthImmunizationListing&gt;
+          &lt;HealthImmunizationListing AccessGU="F9F31018-DCD4-42A3-B50B-5BB880438786" Compliant="true" CompliantMessage="Compliant" Name="MCV" NumReqDoses="1"&gt;
+               &lt;ImmunizationDatesData&gt;
+                    &lt;ImmunizationDate ImmunizationDt="12/21/2017" /&gt;
+               &lt;/ImmunizationDatesData&gt;
+          &lt;/HealthImmunizationListing&gt;
+          &lt;HealthImmunizationListing AccessGU="4A99AC95-B4F3-4F6F-99BE-E122B2E8C951" Compliant="true" CompliantMessage="Not Required" Name="HPV" NumReqDoses="3"&gt;
+               &lt;ImmunizationDatesData&gt;
+                    &lt;ImmunizationDate ImmunizationDt="02/08/2016" /&gt;
+                    &lt;ImmunizationDate ImmunizationDt="04/13/2016" /&gt;
+                    &lt;ImmunizationDate ImmunizationDt="10/06/2016" /&gt;
+               &lt;/ImmunizationDatesData&gt;
+          &lt;/HealthImmunizationListing&gt;
+          &lt;HealthImmunizationListing AccessGU="2ED0651D-134C-4FBA-8534-2743FE177276" Compliant="true" CompliantMessage="Not Required" Name="Meningococcal B" NumReqDoses="3"&gt;
+               &lt;ImmunizationDatesData /&gt;
+          &lt;/HealthImmunizationListing&gt;
+          &lt;HealthImmunizationListing AccessGU="96138EC7-35FD-4538-A160-9D6800A5CBD2" Compliant="true" CompliantMessage="Not Required" Name="Seasonal Flu" NumReqDoses="5"&gt;
+               &lt;ImmunizationDatesData /&gt;
+          &lt;/HealthImmunizationListing&gt;
+     &lt;/HealthImmunizationListings&gt;
+&lt;/StudentHealthData&gt;</ProcessWebServiceRequestMultiWebResult></ProcessWebServiceRequestMultiWebResponse></soap:Body></soap:Envelope>
+
+
+
+
+
+
+updating read 
+
+    POST /Service/PXPCommunication.asmx HTTP/1.1
+    Host: student.tusd1.org
+    Accept: */*
+    Content-Type: text/xml; charset=utf-8
+    SOAPAction: http://edupoint.com/webservices/ProcessWebServiceRequestMultiWeb
+    Connection: keep-alive
+    Cookie: MOBILE_REQUEST_CORE_PAGE=Y; PVUE=00; AppSupportsSession=1; ASP.NET_SessionId=gcu0i0b53cesmlomnqzgi5pr; TUSDSISLB=889065644.20480.0000; edupointkey=1; MSFPC=GUID=9ad696cf7c4d4bd5b96010c6efb6d020&HASH=9ad6&LV=202008&V=4&LU=1597075655946; MUID=3C512CD1AF3B658A27E723F3AEA2648A
+    Accept-Language: en-us
+    Content-Length: 1020
+    Accept-Encoding: gzip, deflate, br
+    User-Agent: StudentVUE/9.1.8 CFNetwork/1220.1 Darwin/20.3.0
+    <?xml version="1.0" encoding="utf-8"?>
+<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"><soap:Body><ProcessWebServiceRequestMultiWeb xmlns="http://edupoint.com/webservices/"><userID>1301246779</userID><password>3.1415fuckyou</password><skipLoginLog>1</skipLoginLog><parent>0</parent><webDBName></webDBName><webServiceHandleName>PXPWebServices</webServiceHandleName><methodName>UpdatePXPMessage</methodName><paramStr>&lt;Parms&gt;&lt;MessageListing xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema"           IconURL="images/PXP/TchComment_S.gif"    ID="31E9E442-7087-4DF3-AF2B-51B596D3F3E9"    BeginDate="08/07/2020 16:02:00"    Type="StudentActivity"    Deletable="true"    Read="true"    From="Sarah Stuart"    MarkAsRead="true"    &gt;&lt;/MessageListing&gt;&lt;/Parms&gt; </paramStr></ProcessWebServiceRequestMultiWeb></soap:Body></soap:Envelope>
+
+    HTTP/1.1 200 OK
+    Cache-Control: private, max-age=0
+    Content-Type: text/xml; charset=utf-8
+    Server: Microsoft-IIS/8.5
+    Access-Control-Allow-Origin: *
+    X-AspNet-Version: 4.0.30319
+    X-Powered-By: ASP.NET
+    Date: Thu, 22 Jul 2021 05:49:44 GMT
+    Content-Length: 498
+    Connection: keep-alive
+
+    <?xml version="1.0" encoding="utf-8"?><soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema"><soap:Body><ProcessWebServiceRequestMultiWebResponse xmlns="http://edupoint.com/webservices/"><ProcessWebServiceRequestMultiWebResult>&lt;Update&gt;Message updated.&lt;/Update&gt;</ProcessWebServiceRequestMultiWebResult></ProcessWebServiceRequestMultiWebResponse></soap:Body></soap:Envelope>
+
+
+
+get mail attachment
+    POST /Service/PXPCommunication.asmx HTTP/1.1
+    Host: student.tusd1.org
+    Accept: */*
+    Content-Type: text/xml; charset=utf-8
+    SOAPAction: http://edupoint.com/webservices/ProcessWebServiceRequestMultiWeb
+    Connection: keep-alive
+    Cookie: MOBILE_REQUEST_CORE_PAGE=Y; PVUE=00; AppSupportsSession=1; ASP.NET_SessionId=gcu0i0b53cesmlomnqzgi5pr; TUSDSISLB=889065644.20480.0000; edupointkey=1; MSFPC=GUID=9ad696cf7c4d4bd5b96010c6efb6d020&HASH=9ad6&LV=202008&V=4&LU=1597075655946; MUID=3C512CD1AF3B658A27E723F3AEA2648A
+    Accept-Language: en-us
+    Content-Length: 764
+    Accept-Encoding: gzip, deflate, br
+    User-Agent: StudentVUE/9.1.8 CFNetwork/1220.1 Darwin/20.3.0
+
+    <?xml version="1.0" encoding="utf-8"?>
+<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"><soap:Body><ProcessWebServiceRequestMultiWeb xmlns="http://edupoint.com/webservices/"><userID>1301246779</userID><password>3.1415fuckyou</password><skipLoginLog>1</skipLoginLog><parent>0</parent><webDBName></webDBName><webServiceHandleName>PXPWebServices</webServiceHandleName><methodName>SynergyMailGetAttachment</methodName><paramStr>&lt;Parms&gt;&lt;childIntID&gt;&lt;/childIntID&gt;&lt;SmAttachmentGU&gt;C6E44871-EE8C-4809-9C87-6A2CF2ABC088&lt;/SmAttachmentGU&gt;&lt;/Parms&gt;</paramStr></ProcessWebServiceRequestMultiWeb></soap:Body></soap:Envelope>
+
+
+    res
+
+    HTTP/1.1 200 OK
+    Cache-Control: private, max-age=0
+    Content-Type: text/xml; charset=utf-8
+    Server: Microsoft-IIS/8.5
+    Access-Control-Allow-Origin: *
+    X-AspNet-Version: 4.0.30319
+    X-Powered-By: ASP.NET
+    Date: Thu, 22 Jul 2021 05:52:47 GMT
+    Content-Length: 86098
+    Connection: keep-alive
+
+
+    <?xml version="1.0" encoding="utf-8"?><soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema"><soap:Body><ProcessWebServiceRequestMultiWebResponse xmlns="http://edupoint.com/webservices/"><ProcessWebServiceRequestMultiWebResult>&lt;AttachmentXML xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" DocumentName="Syllabus - AP Lang 2020-2021.docx"&gt;
+     &lt;Base64Code&gt;UEsDBBQABgAIAAAAIQD3D/8OnAEAAOAHAAATAAgCW0NvbnRlbnRfVH ......HgAAAAAAAAAAAAAAAACV8QAAY3VzdG9tWG1sL19yZWxzL2l0ZW0zLnhtbC5yZWxzUEsFBgAAAAAZABkAhAYAAJzzAAAAAA==&lt;/Base64Code&gt;
+&lt;/AttachmentXML&gt;</ProcessWebServiceRequestMultiWebResult></ProcessWebServiceRequestMultiWebResponse></soap:Body></soap:Envelope>
+
+
+
+
+GetContentUserDefinedModule
+
+    <?xml version="1.0" encoding="utf-8"?>
+<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"><soap:Body><ProcessWebServiceRequestMultiWeb xmlns="http://edupoint.com/webservices/"><userID>1301246779</userID><password>3.1415fuckyou</password><skipLoginLog>1</skipLoginLog><parent>0</parent><webDBName></webDBName><webServiceHandleName>PXPWebServices</webServiceHandleName><methodName>GetContentUserDefinedModule</methodName><paramStr>&lt;Parms&gt;&lt;childIntID&gt;0&lt;/childIntID&gt;&lt;LanguageCode&gt;00&lt;/LanguageCode&gt;&lt;/Parms&gt;</paramStr></ProcessWebServiceRequestMultiWeb></soap:Body></soap:Envelope>
+
+    <?xml version="1.0" encoding="utf-8"?><soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema"><soap:Body><ProcessWebServiceRequestMultiWebResponse xmlns="http://edupoint.com/webservices/"><ProcessWebServiceRequestMultiWebResult>&lt;AllModuleRecordData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"&gt;
+     &lt;ModuleRecords /&gt;
+&lt;/AllModuleRecordData&gt;</ProcessWebServiceRequestMultiWebResult></ProcessWebServiceRequestMultiWebResponse></soap:Body></soap:Envelope>

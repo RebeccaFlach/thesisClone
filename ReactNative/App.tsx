@@ -10,7 +10,7 @@ import { createDrawerNavigator } from '@react-navigation/drawer';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
 //screens
-import Homepage from './Homepage';
+import Homepage from './Pages/Homepage';
 import Messages from './Pages/Messages';
 import History from './Pages/History';
 import {EnterZip, DistrictList} from './Pages/Login';
@@ -29,15 +29,15 @@ export default function App() {
   const [appIsReady, setAppIsReady] = React.useState(false);
 
   	React.useEffect(() => {
-		SplashScreen.preventAutoHideAsync();
+		// SplashScreen.preventAutoHideAsync();
 		api.login().then((user) => {
 			if (!user)
 				setLoggedIn(false)
 			else
 				setLoggedIn(true);
 
-			new Promise(resolve => setTimeout(resolve, 1000))
-				.then(() => setAppIsReady(true))
+			// new Promise(resolve => setTimeout(resolve, 1000))
+			// 	.then(() => setAppIsReady(true))
 		})
     
 	}, [])
@@ -48,9 +48,9 @@ export default function App() {
 		}
 	  }, [appIsReady]);
 	
-	  if (!appIsReady) {
-		return null;
-	  }
+	//   if (!appIsReady) {
+	// 	return null;
+	//   }
 
 	const Login = () => {
 		const [name, setName] = React.useState<string>();
@@ -126,17 +126,18 @@ export default function App() {
 			</Stack.Navigator>
 		</View>
 	}
-
+console.log(loggedIn)
 
 	return <NavigationContainer >
     <StatusBar barStyle='light-content'></StatusBar>
 
     {!loggedIn 
 	? <SignUp />
-	: <View 
-		onLayout={onLayoutRootView}
-		style={{flex: 1}}
-	>
+	: 
+	// <View 
+	// 	// onLayout={onLayoutRootView}
+	// 	style={{flex: 1}}
+	// >
 		<Tabs.Navigator 
 			tabBarOptions={{
 				labelPosition: 'below-icon',
@@ -188,7 +189,8 @@ export default function App() {
 		
 
 		</Tabs.Navigator>
-	</View>}
+	// </View>
+	}
   </NavigationContainer>
 
 }

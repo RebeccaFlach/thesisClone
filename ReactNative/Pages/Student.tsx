@@ -1,7 +1,6 @@
 import React from 'react';
 import axios from 'axios';
 import { StyleSheet, Text, View, Button, TextInput, FlatList, Pressable, ScrollView, RefreshControl, SafeAreaView, Image } from 'react-native';
-import config from '../config';
 import GlobalStyles from '../GlobalStyles';
 
 
@@ -40,7 +39,7 @@ const Main = ({navigation}) => {
                     {  height: 40, width: 80, margin: 30}
                 ]
             }
-        ]
+        ] as any; //for some reason, it complains about the css used
 
         const ProfilePic = () => <Image 
             style={{width: 90, height: 90, borderRadius: 100, marginRight: 20}}

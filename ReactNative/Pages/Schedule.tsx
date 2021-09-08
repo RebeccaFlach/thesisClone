@@ -1,16 +1,11 @@
 import React from 'react';
 import axios from 'axios';
 import { StyleSheet, Text, View, Button, TextInput, FlatList, Pressable, ScrollView, RefreshControl, SafeAreaView, Image } from 'react-native';
-import config from '../config';
 import GlobalStyles from '../GlobalStyles';
 
 
-import { createStackNavigator } from '@react-navigation/stack';
 import api from '../frontendapi';
-import SkeletonContent from 'react-native-skeleton-content';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
-import CourseHistory, {Documents, DocView} from './History';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Reusables from '../Reusables';
 

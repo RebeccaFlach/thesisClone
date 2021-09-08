@@ -4,14 +4,13 @@ import axios from 'axios';
 import { StyleSheet, Text, View, Button, TextInput, FlatList, Pressable, SafeAreaView } from 'react-native';
 
 import GlobalStyles from '../GlobalStyles';
-import config from '../config';
 import { NavigationContainer } from '@react-navigation/native';
 
 import {AssignmentEntity} from '../../backend/src/model/GradeBook'
 
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
-import { NamesContext } from '../Homepage';
+import { NamesContext } from './Homepage';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import _ from 'underscore';
 

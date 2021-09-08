@@ -7,7 +7,6 @@ import { slide as Menu } from 'react-burger-menu';
 import { createStackNavigator } from '@react-navigation/stack';
 
 import GlobalStyles from '../GlobalStyles';
-import config from '../config';
 
 import api from '../api';
 import AsyncStorage from '@react-native-async-storage/async-storage';
