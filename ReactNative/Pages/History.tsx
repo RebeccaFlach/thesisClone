@@ -178,23 +178,16 @@ const Documents = ({navigation}) => {
             flex: 1, 
             alignItems: 'center',
             flexDirection: 'row',
-            padding: 10,
             paddingLeft: 20
         }, GlobalStyles.section]}
     >
         <Pressable
-            onPress={() => {
-                api.getDoc(item.DocumentGU).then((doc) => {
-                    navigation.navigate('DocView', doc.data.Base64Code._text)
-                })}
-            }
-            style={{padding: 10}}
+            onPress={() => navigation.navigate('DocView', item.DocumentGU)}
+            style={{padding: 20, width: '100%'}}
         >
-
-        <Text style={[GlobalStyles.secondaryText, {fontSize: 20, flex: 1}]} numberOfLines={1}>
-            {item.DocumentComment}
-        </Text>
-
+            <Text style={[GlobalStyles.secondaryText, {fontSize: 20, flex: 1}]} numberOfLines={1}>
+                {item.DocumentComment}
+            </Text>
         </Pressable>
     </View>
 
@@ -218,17 +211,43 @@ const Documents = ({navigation}) => {
 }
 
 const DocView = ({route, navigation}) => {
-    const src = 'data:application/pdf;base64,' + route.params
+    const [res, setRes] = React.useState(null);
+    const [attempts, setAttempts] = React.useState<number>(0);
+    const [loading, setLoading] = React.useState<boolean>(true);
+
+    const getDoc = () => {
+        return api.getDoc(route.params).then((res) => {
+            setRes(res);
+            if (res.error)
+                setAttempts(attempts + 1);
+        })
+    }
+    
+    React.useEffect(() => {
+        getDoc().then(() => {
+            setLoading(false);
+        })
+    }, []);
+
+    const src = 'data:application/pdf;base64,' + res?.data?.Base64Code._text;
 
     return <SafeAreaView style={GlobalStyles.container}>
-        <PDFReader
-            source={{base64: src}}
-            style={GlobalStyles.container}
-            customStyle={{
-                readerContainerZoomContainer: GlobalStyles.container
-            }}
-        />
-
+        <ErrorHandler res={res} attempts={attempts} getFunc={getDoc}/>
+        <Reusables.SkeletonLoader
+            loading={loading}
+            skeleton={[{
+                margin: 10,
+                flex: 1,
+                width: '85%',
+                alignSelf: 'center'
+            }]}
+        >   
+            <PDFReader
+                noLoader
+                source={{base64: src}}
+                style={GlobalStyles.container}
+            />
+        </Reusables.SkeletonLoader>
     </SafeAreaView>
 
 }
