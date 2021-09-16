@@ -1,25 +1,27 @@
-import AsyncStorage from "@react-native-async-storage/async-storage"
-import axios from "axios"
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import axios from 'axios';
 import * as SecureStore from 'expo-secure-store';
 
+import Constants from 'expo-constants';
 
+const { manifest } = Constants;
 
-//requester
+const devUrl = 'http://' + manifest.debuggerHost.split(`:`).shift().concat(`:5001`) + '/api/grade/'
+
 const request  = async (method:string, params?) => {
     if(!api.user)
         await api.login()
 
-    let url = 'https://simplevue-backend.herokuapp.com/api/grade/';
-    url += method;
+    // let url = 'https://simplevue-backend.herokuapp.com/api/grade/';
+    let url = devUrl + method;
     
     const auth = {
         username: api.user,
         password: api.pass
     }
     
-    // console.log('auth', auth)
     return axios.get(url, {params: params, auth: auth}).then((res) => {
-        //store data
+        //need to store data
         return {data: res.data, error: null};
 
     })
@@ -28,9 +30,7 @@ const request  = async (method:string, params?) => {
             return {data: data, error: err}
         })
         return {data: null, error: err}
-
     })
-   
 }
 
 
@@ -65,7 +65,6 @@ const api = {
         return request('messages');
     },
 
-    
 }
 
 

@@ -29,12 +29,9 @@ export default function App() {
   const [appIsReady, setAppIsReady] = React.useState(false);
 
   	React.useEffect(() => {
-		// SplashScreen.preventAutoHideAsync();
+		// SplashScreen.preventAutoHideAsync(); //bug with not logged in, on hold to fix
 		api.login().then((user) => {
-			if (!user)
-				setLoggedIn(false)
-			else
-				setLoggedIn(true);
+			setLoggedIn(Boolean(user))
 
 			// new Promise(resolve => setTimeout(resolve, 1000))
 			// 	.then(() => setAppIsReady(true))
@@ -66,7 +63,7 @@ export default function App() {
 
 				await Promise.all([passPromise, userPromise]);
 				await api.login();
-				console.log('logged in!')
+
 				setLoggedIn(true);
 				
 			}
@@ -126,7 +123,6 @@ export default function App() {
 			</Stack.Navigator>
 		</View>
 	}
-console.log(loggedIn)
 
 	return <NavigationContainer >
     <StatusBar barStyle='light-content'></StatusBar>
