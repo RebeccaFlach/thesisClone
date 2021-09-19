@@ -2,8 +2,8 @@ export interface Student {
     StudentInfo: StudentInfo;
   }
   export interface StudentInfo {
-    _attributes: Attributes;
-    LockerInfoRecords: string;
+    _attributes: DataAttributes;
+    LockerInfoRecords: any;
     FormattedName: text;
     PermID: text;
     Gender: text;
@@ -31,7 +31,7 @@ export interface Student {
     Dentist: Dentist;
     UserDefinedGroupBoxes: UserDefinedGroupBoxes;
   }
-  export interface Attributes {
+  export interface DataAttributes {
     "xmlns:xsd": string;
     "xmlns:xsi": string;
     Type: string;
@@ -43,12 +43,12 @@ export interface Student {
     _text: string;
   }
   export interface EmergencyContacts {
-    EmergencyContact?: (EmergencyContactEntity)[] | null;
+    EmergencyContact?: EmergencyContact[] | null;
   }
-  export interface EmergencyContactEntity {
-    _attributes: Attributes1;
+  export interface EmergencyContact {
+    _attributes: EmergencyContactInfo;
   }
-  export interface Attributes1 {
+  export interface EmergencyContactInfo {
     Name: string;
     Relationship: string;
     HomePhone: string;
@@ -57,18 +57,18 @@ export interface Student {
     MobilePhone: string;
   }
   export interface Physician {
-    _attributes: Attributes2;
+    _attributes: PhysicianInfo;
   }
-  export interface Attributes2 {
+  export interface PhysicianInfo {
     Name: string;
     Hospital: string;
     Phone: string;
     Extn: string;
   }
   export interface Dentist {
-    _attributes: Attributes3;
+    _attributes: DentistInfo;
   }
-  export interface Attributes3 {
+  export interface DentistInfo {
     Name: string;
     Office: string;
     Phone: string;
@@ -78,21 +78,21 @@ export interface Student {
     UserDefinedGroupBox: UserDefinedGroupBox;
   }
   export interface UserDefinedGroupBox {
-    _attributes: Attributes4;
+    _attributes: GroupBoxInfo;
     UserDefinedItems: UserDefinedItems;
   }
-  export interface Attributes4 {
+  export interface GroupBoxInfo {
     GroupBoxLabel: string;
     GroupBoxID: string;
     VCID: string;
   }
   export interface UserDefinedItems {
-    UserDefinedItem?: (UserDefinedItemEntity)[] | null;
+    UserDefinedItem?: UserDefinedItem[] | null;
   }
-  export interface UserDefinedItemEntity {
-    _attributes: Attributes5;
+  export interface UserDefinedItem {
+    _attributes: ItemInfo;
   }
-  export interface Attributes5 {
+  export interface ItemInfo {
     ItemLabel: string;
     ItemType: string;
     SourceObject: string;

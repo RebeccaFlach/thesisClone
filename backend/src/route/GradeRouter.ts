@@ -5,6 +5,7 @@ import axios, { AxiosResponse } from 'axios'
 import _ from 'underscore';
 import convert from 'xml-js';
 import decoder from 'base-64';
+import { Student, StudentInfo } from '../model/Student';
 
 
 
@@ -133,7 +134,7 @@ export default class GradeRouter {
             console.log('getting grades')
             
             const gradebook = await this.request('Gradebook', req.headers.authorization) as gradebook;
-            console.log(gradebook);
+            // console.log(gradebook);
             const courses:any = gradebook?.Gradebook?.Courses?.Course || [];
                 
                 const summary = courses.map((course) => {
@@ -261,8 +262,19 @@ export default class GradeRouter {
         })
 
         this.router.route('/studentInfo').get(async (req, res) => {
-            const svInfo = await this.request('StudentInfo', req.headers.authorization);
-            res.json(svInfo.StudentInfo);
+            console.log('GETTING STUDENT INFO')
+            const data = await this.request('StudentInfo', req.headers.authorization) as Student;
+            const svInfo = data.StudentInfo;
+
+            const formattedData = {
+                name: svInfo.FormattedName._text,
+                id: svInfo.PermID._text,
+                gender: svInfo.Gender._text,
+                address: svInfo.Address._text,
+                photo: svInfo.Photo._text
+            }
+
+            res.json(formattedData);
         })
 
         this.router.route('/ping').get((req, res) => {

@@ -43,7 +43,7 @@ const Main = ({navigation}) => {
 
         const ProfilePic = () => <Image 
             style={{width: 90, height: 90, borderRadius: 100, marginRight: 20}}
-            source={{uri: 'data:image/png;base64,' + studentInfo?.Photo._text}}
+            source={{uri: 'data:image/png;base64,' + studentInfo?.photo}}
         />
 
         return <View style={[GlobalStyles.section, styles.header, {height: 160}]}>
@@ -58,10 +58,10 @@ const Main = ({navigation}) => {
                     <ProfilePic />
                     <View>
                         <Text style={[GlobalStyles.text, {fontSize: 25, marginBottom: 10}]}>
-                            {studentInfo?.FormattedName._text}
+                            {studentInfo?.name}
                         </Text>
                         <Text style={[GlobalStyles.secondaryText, {fontSize: 20, flex: 1}]}>
-                            {studentInfo?.PermID._text}
+                            {studentInfo?.id}
                         </Text>
                     </View>
                 </View>
