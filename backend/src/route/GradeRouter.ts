@@ -6,6 +6,8 @@ import _ from 'underscore';
 import convert from 'xml-js';
 import decoder from 'base-64';
 import { Student, StudentInfo } from '../model/Student';
+import { DocumentList } from '../model/DocumentList';
+import { Document } from '../model/Document';
 
 
 
@@ -203,7 +205,6 @@ export default class GradeRouter {
                 return;
             }
             
-            
 
             const find = (start, end, startAt?) => {
                 let toSearch = data.substring(startAt || 0);
@@ -235,25 +236,33 @@ export default class GradeRouter {
         })
 
         this.router.route('/documents').get(async (req, res) => {
-            const svDocuments = await this.request('GetStudentDocumentInitialData', req.headers.authorization);
-            const documents = svDocuments.StudentDocuments.StudentDocumentDatas.StudentDocumentData
+            const svDocuments = await this.request('GetStudentDocumentInitialData', req.headers.authorization) as DocumentList;
+
+            const documents = svDocuments.StudentDocuments.StudentDocumentDatas.StudentDocumentData;
             
-            const formatted = documents.map(doc => doc._attributes);
+            const formatted = documents?.map(doc => {
+                const d = doc._attributes;
+                return {
+                    id: d.DocumentGU,
+                    name: d.DocumentFileName,
+                    type: d.DocumentType,
+                    date: d.DocumentDate,
+                    comment: d.DocumentComment
+                }
+            });
             res.json(formatted);
         })
 
         this.router.route('/document').get(async (req:Request, res) => {
-            console.log(req.query.docID)
-           
-           
-            // res.json(null)
-            // return;
+            const svDocument = await this.request('GetContentOfAttachedDoc', req.headers.authorization, { DocumentGU: req.query.docID}) as Document;
 
-            const svDocument = await this.request('GetContentOfAttachedDoc', req.headers.authorization, { DocumentGU: req.query.docID});
-            const doc = svDocument.StudentAttachedDocumentData.DocumentDatas.DocumentData
+            const doc = svDocument.StudentAttachedDocumentData.DocumentDatas.DocumentData;
+
+            const formatted = {
+                base64: doc.Base64Code._text
+            }
             
-            
-            res.json(doc);
+            res.json(formatted);
         })
 
         this.router.route('/schedule').get(async (req, res) => {
@@ -307,9 +316,6 @@ export default class GradeRouter {
                 res.status(403).send({message: err})
             })
         })
-
-
-
        
     }
 }

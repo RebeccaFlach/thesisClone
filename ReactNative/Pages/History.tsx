@@ -134,12 +134,11 @@ const Term = (props: {name: string, courses: GradedCourse[]}) => {
 }
 
 interface Document {
-    DocumentComment: string,
-    DocumentDate: string,
-    DocumentFileName: string,
-    DocumentGU: string,
-    DocumentType: string,
-    StudentGU: string, 
+    id: string,
+    name: string,
+    type: string, 
+    date: string,
+    comment: string
 }
 
 
@@ -149,7 +148,7 @@ const Documents = ({navigation}) => {
     const [attempts, setAttempts] = React.useState<number>(0);
     const [loading, setLoading] = React.useState<boolean>(true);
     const [refreshing, setRefreshing] = React.useState<boolean>(false);
-    const docs = res?.data;
+    const docs:Document[] = res?.data;
    
     const getDocuments = () => {
 		return api.getDocuments().then((res) => {
@@ -182,11 +181,11 @@ const Documents = ({navigation}) => {
         }, GlobalStyles.section]}
     >
         <Pressable
-            onPress={() => navigation.navigate('DocView', item.DocumentGU)}
+            onPress={() => navigation.navigate('DocView', item.id)}
             style={{padding: 20, width: '100%'}}
         >
             <Text style={[GlobalStyles.secondaryText, {fontSize: 20, flex: 1}]} numberOfLines={1}>
-                {item.DocumentComment}
+                {item.comment}
             </Text>
         </Pressable>
     </View>
@@ -229,7 +228,7 @@ const DocView = ({route, navigation}) => {
         })
     }, []);
 
-    const src = 'data:application/pdf;base64,' + res?.data?.Base64Code._text;
+    const src = 'data:application/pdf;base64,' + res?.data?.base64;
 
     return <SafeAreaView style={GlobalStyles.container}>
         <ErrorHandler res={res} attempts={attempts} getFunc={getDoc}/>
