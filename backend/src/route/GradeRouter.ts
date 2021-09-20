@@ -8,6 +8,7 @@ import decoder from 'base-64';
 import { Student, StudentInfo } from '../model/Student';
 import { DocumentList } from '../model/DocumentList';
 import { Document } from '../model/Document';
+import { Schedule } from '../model/Schedule';
 
 
 
@@ -266,10 +267,9 @@ export default class GradeRouter {
         })
 
         this.router.route('/schedule').get(async (req, res) => {
-            const svSchedule = await this.request('StudentClassList', req.headers.authorization);
+            const svSchedule = await this.request('StudentClassList', req.headers.authorization) as Schedule;
 
             const schedule = svSchedule.StudentClassSchedule?.ClassLists?.ClassListing || [];
-
             
             const formatted = _(schedule).map(course => {
                 const courseInfo = course._attributes
@@ -286,7 +286,6 @@ export default class GradeRouter {
         })
 
         this.router.route('/studentInfo').get(async (req, res) => {
-            console.log('GETTING STUDENT INFO')
             const data = await this.request('StudentInfo', req.headers.authorization) as Student;
             const svInfo = data.StudentInfo;
 
