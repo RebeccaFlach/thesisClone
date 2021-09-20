@@ -1,6 +1,6 @@
 import { Request, Router } from 'express';
 import gradebook, {CourseEntity, Gradebook, GradeCalculationSummary} from '../model/GradeBook';
-import SVMessages from '../model/Messages';
+import {Messages}from '../model/Messages';
 import axios, { AxiosResponse } from 'axios'
 import _ from 'underscore';
 import convert from 'xml-js';
@@ -115,11 +115,26 @@ export default class GradeRouter {
 
         this.router.route('/messages').get(async (req, res) => {
             try {
-                const data = await this.request('GetPXPMessages', req.headers.authorization) as SVMessages;
+                const data = await this.request('GetPXPMessages', req.headers.authorization) as Messages;
+                
                 const messages = data?.PXPMessagesData?.MessageListings?.MessageListing;
-                //todo: transform data
+                
+                
+                const formatted = _(messages).map((m) => {
+                    
+                    return {
+                        subject: m._attributes.SubjectNoHTML,
+                        html: m._attributes.Content,
+                        from: m._attributes.From,
+                        date: m._attributes.BeginDate,
+                        attachments: m.AttachmentDatas.AttachmentData,
+                        id: m._attributes.ID,
+                        
+                        
+                    }
+                })
                    
-                res.json(messages);
+                res.json(formatted);
             }
             catch {
 

@@ -59,14 +59,12 @@ const Main = ({navigation}) => {
 
     const renderMessage = ({ item }) => {
         // console.log(item.AttachmentDatas.AttachmentData)
-        if (!item._attributes.Read)
-            console.log('not read!')
         return <Message 
-            subject={item._attributes.SubjectNoHTML} 
-            content={item._attributes.Content}
-            from={item._attributes.From}
-            date={item._attributes.BeginDate}
-            attachments={item.AttachmentDatas.AttachmentData}
+            subject={item.subject} 
+            content={item.html}
+            from={item.from}
+            date={item.date}
+            attachments={item.attachments}
             nav={navigation}
         />
     }
@@ -94,7 +92,7 @@ const Main = ({navigation}) => {
             <Reusables.List 
                 data={messages}
                 itemRenderer={renderMessage}
-                keyExtractor={(message) => message._attributes.ID}
+                keyExtractor={(message) => message.id}
                 refreshing={refreshing}
                 onRefresh={onRefresh}
             />
