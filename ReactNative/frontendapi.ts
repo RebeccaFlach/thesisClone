@@ -6,7 +6,8 @@ import Constants from 'expo-constants';
 
 const { manifest } = Constants;
 
-const devUrl = 'http://' + manifest.debuggerHost.split(`:`).shift().concat(`:5001`) + '/api/grade/'
+
+const devUrl = 'http://' + (manifest.debuggerHost || "localhost").split(`:`).shift().concat(`:5001`) + '/api/grade/'
 
 const request  = async (method:string, params?) => {
     if(!api.user)

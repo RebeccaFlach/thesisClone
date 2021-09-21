@@ -6,7 +6,8 @@
   "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "NODE_OPTIONS='--no-warnings --loader ts-node/esm' nodemon --watch 'src/**/*' -e ts,tsx --exec ts-node index.ts "
+    "start": "cross-env NODE_OPTIONS=\"--no-warnings --loader ts-node/esm\" nodemon --watch 'src/**/*' -e ts,tsx --exec ts-node index.ts ",
+    "startNoMon": "node --loader ts-node/esm index.ts"
   },
   "keywords": [],
   "author": "",
@@ -21,6 +22,7 @@
     "basic-auth": "^2.0.1",
     "body-parser": "^1.19.0",
     "cors": "^2.8.5",
+    "cross-env": "^7.0.3",
     "dayjs": "^1.10.5",
     "dompurify": "^2.2.9",
     "dotenv": "^10.0.0",
